@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Collaborative Remote Draw</string>
+    <string name="connect_to_server">Connect to the server.</string>
+    <string name="ip_addr">IP address</string>
+    <string name="port_num">Port number</string>
+    <string name="connect">Connect</string>
 </resources>
