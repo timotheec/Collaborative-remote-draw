@@ -19,8 +19,8 @@ public class ConnectActivity extends AppCompatActivity {
         //Create the intent
         Intent intent = new Intent(this, MainActivity.class);
         //Get the values
-        EditText ipAddrInput = (EditText) findViewById(R.id.ipAddrInput);
-        EditText portNumInput = (EditText) findViewById(R.id.portNumInput);
+        EditText ipAddrInput = findViewById(R.id.ipAddrInput);
+        EditText portNumInput = findViewById(R.id.portNumInput);
         //Add the value to the intent
         intent.putExtra("ip_addr", ipAddrInput.getText().toString());
         intent.putExtra("port_num", portNumInput.getText().toString());

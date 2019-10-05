@@ -7,6 +7,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Random;
 
@@ -35,7 +36,7 @@ public class SocketClient extends AsyncTask<Void, Void, Void> {
         }
 
         while (true) {
-            if (isCancelled() || socket.isClosed())
+            if (socket == null || isCancelled() || socket.isClosed())
                 break;
 
             try {
@@ -52,15 +53,13 @@ public class SocketClient extends AsyncTask<Void, Void, Void> {
                 // Wait for the server answer
                 String response = read();
                 Log.i("INFO", "\t * Server answer : " + response);
-            } catch (Exception e1) {
-                e1.printStackTrace();
+            } catch (Exception e) {
+                Log.i("INFO", "Connection closed");
                 break;
             }
         }
 
-        writer.close();
         closeSocket();
-
         return null;
     }
 
