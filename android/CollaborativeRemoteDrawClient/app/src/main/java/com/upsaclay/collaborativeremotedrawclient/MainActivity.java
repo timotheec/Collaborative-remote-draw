@@ -11,11 +11,16 @@ import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.upsaclay.collaborativeremotedrawclient.network.SocketClient;
+
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
 public class MainActivity extends AppCompatActivity {
+
+    private final static String HOST = "192.168.0.102";
+    private final static int PORT = 5001;
 
     private String ipAddr;
     private int portNum;
@@ -95,6 +100,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+
+        new SocketClient(HOST, PORT).execute();
 
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
