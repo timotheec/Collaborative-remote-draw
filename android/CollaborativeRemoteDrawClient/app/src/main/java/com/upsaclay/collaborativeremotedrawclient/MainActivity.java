@@ -19,8 +19,8 @@ import com.upsaclay.collaborativeremotedrawclient.network.SocketClient;
  */
 public class MainActivity extends AppCompatActivity {
 
-    private final static String HOST = "192.168.0.102";
-    private final static int PORT = 5001;
+//    private final static String HOST = "192.168.0.102";
+//    private final static int PORT = 5001;
 
     private String ipAddr;
     private int portNum;
@@ -101,8 +101,6 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        new SocketClient(HOST, PORT).execute();
-
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
@@ -110,6 +108,8 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = getIntent();
         ipAddr = intent.getStringExtra("ip_addr");
         portNum = Integer.valueOf(intent.getStringExtra("port_num"));
+
+        new SocketClient(ipAddr, portNum).execute();
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
