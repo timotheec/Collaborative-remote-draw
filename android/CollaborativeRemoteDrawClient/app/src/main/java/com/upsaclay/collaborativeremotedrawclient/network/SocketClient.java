@@ -1,9 +1,11 @@
 package com.upsaclay.collaborativeremotedrawclient.network;
 
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -50,8 +52,14 @@ public class SocketClient extends AsyncTask<Void, Void, Void> {
                 Log.i("INFO", "Command " + commande + " sent to the server.");
 
                 // Wait for the server answer
-                String response = read();
-                Log.i("INFO", "\t * Server answer : " + response);
+                if (commande == "BACKGROUND") {
+                    Bitmap image = readImage();
+                    Log.i("INFO", "\t * Server answer : " + image.getHeight() + " : " + image.getWidth());
+                } else if (commande == "CLOSE") {
+                    String response = read();
+                    Log.i("INFO", "\t * Server answer : " + response);
+                }
+
             } catch (Exception e) {
                 Log.i("INFO", "Connection closed");
                 break;
@@ -85,5 +93,29 @@ public class SocketClient extends AsyncTask<Void, Void, Void> {
         stream = reader.read(b);
         response = new String(b, 0, stream);
         return response;
+    }
+
+    private Bitmap readImage() throws Exception {
+
+        // Source : https://stackoverflow.com/questions/29453417/send-java-bufferedimage-to-bitmap-android/29476525#29476525
+        DataInputStream in = new DataInputStream(socket.getInputStream());
+        int w = in.readInt();
+        int h = in.readInt();
+        byte[] imgBytes = new byte[w * h * 4]; // 4 byte ABGR
+        in.readFully(imgBytes);
+
+        // Convert 4 byte interleaved ABGR to int packed ARGB
+        int[] pixels = new int[w * h];
+        for (int i = 0; i < pixels.length; i++) {
+            int byteIndex = i * 4;
+            pixels[i] =
+                    ((imgBytes[byteIndex] & 0xFF) << 24)
+                            | ((imgBytes[byteIndex + 3] & 0xFF) << 16)
+                            | ((imgBytes[byteIndex + 2] & 0xFF) << 8)
+                            | (imgBytes[byteIndex + 1] & 0xFF);
+        }
+
+        // Finally, create bitmap from packed int ARGB, using ARGB_8888
+        return Bitmap.createBitmap(pixels, w, h, Bitmap.Config.ARGB_8888);
     }
 }

@@ -1,15 +1,20 @@
 package network;
 
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.io.BufferedInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
-import java.text.DateFormat;
-import java.util.Date;
+
+import javax.imageio.ImageIO;
 
 // Source : https://openclassrooms.com/fr/courses/2654601-java-et-la-programmation-reseau/2668874-les-sockets-cote-serveur
+// Note : code is inspire from an openclassrooms solutions but completly adpated to our needs.
 public class ClientProcessor implements Runnable {
 
 	private Socket sock;
@@ -49,7 +54,8 @@ public class ClientProcessor implements Runnable {
 
 				switch (response.toUpperCase()) {
 				case "BACKGROUND":
-					toSend = "image.jpg";
+					sendImage(ImageIO.read(new File("/home/timothee/Pictures/aa.png"))); // TODO : Remove hardcoded link
+																							// to the image
 					break;
 				case "CLOSE":
 					toSend = "Cummunication closed";
@@ -87,6 +93,20 @@ public class ClientProcessor implements Runnable {
 		stream = reader.read(b);
 		response = new String(b, 0, stream);
 		return response;
+	}
+
+	// Sent an image
+	private void sendImage(BufferedImage image) {
+		try {
+			byte[] imgBytes = ((DataBufferByte) image.getData().getDataBuffer()).getData();
+			DataOutputStream out = new DataOutputStream(sock.getOutputStream());
+			out.writeInt(image.getWidth());
+			out.writeInt(image.getHeight());
+			out.write(imgBytes);
+			out.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
