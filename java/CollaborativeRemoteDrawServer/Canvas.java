@@ -1,5 +1,6 @@
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -8,34 +9,29 @@ import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 public class Canvas extends JPanel {
-	
-	private final static int WIDTH = 500;
-	private final static int HEIGHT = 500;
-	
+
 	private File file;
-	private BufferedImage image;
+	private CanvasView view;
+	
+	public Canvas() {
+		view = new CanvasView(this);
+	}
 
 	public void setImage(String imagePath) throws IOException {
 		file = new File(imagePath);
-		image = ImageIO.read(file);
+		view.setImage(ImageIO.read(file));
 		repaint();
-		setSize(new Dimension(image.getWidth(), image.getHeight()));
-		revalidate();
 	}
 
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-
-		if (image != null)
-			g.drawImage(image, 0, 0, null);
+		view.paint((Graphics2D) g);
 	}
 
 	@Override
 	public Dimension getPreferredSize() {
-		if (image != null)
-			return new Dimension(image.getWidth(), image.getHeight());
-		return new Dimension(WIDTH, HEIGHT);
+		return view.getPreferredSize();
 	}
-	
+
 }
