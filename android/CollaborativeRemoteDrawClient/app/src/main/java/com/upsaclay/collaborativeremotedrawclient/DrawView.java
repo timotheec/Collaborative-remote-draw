@@ -22,12 +22,17 @@ public class DrawView extends View implements DataListener {
 
     private Point startPos, endPos;
 
+    private Bitmap image;
+
+    private boolean connected;
+
     public DrawView(Context context, AttributeSet attrSet){
         super(context, attrSet);
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         pointList = new ArrayList<>();
         startPos = new Point(0, 0);
         endPos = new Point(0, 0);
+        connected = false;
     }
 
     public boolean onTouchEvent(MotionEvent e){
@@ -54,6 +59,7 @@ public class DrawView extends View implements DataListener {
 
     public void onDraw(Canvas canvas){
         super.onDraw(canvas);
+        if(connected)canvas.drawBitmap(image, 0, 0, paint);
         paint.setStrokeWidth(10);
         Point startPos = new Point(0, 0);
         boolean even = true;
@@ -70,5 +76,11 @@ public class DrawView extends View implements DataListener {
     @Override
     public void onReceiveImage(Bitmap image) {
         Log.i("INFO", "Image size : " + image.getHeight() + " : " + image.getWidth());
+
+        this.image = image;
+
+        connected = true;
+
+        this.invalidate();
     }
 }

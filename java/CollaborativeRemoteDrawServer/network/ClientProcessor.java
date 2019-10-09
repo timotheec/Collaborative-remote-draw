@@ -54,8 +54,9 @@ public class ClientProcessor implements Runnable {
 
 				switch (response.toUpperCase()) {
 				case "BACKGROUND":
-					sendImage(ImageIO.read(new File("/home/timothee/Pictures/aa.png"))); // TODO : Remove hardcoded link
+					sendImage(ImageIO.read(new File("D:\\boi.png"))); // TODO : Remove hardcoded link
 																							// to the image
+					System.out.println("image sent");
 					break;
 				case "CLOSE":
 					toSend = "Cummunication closed";

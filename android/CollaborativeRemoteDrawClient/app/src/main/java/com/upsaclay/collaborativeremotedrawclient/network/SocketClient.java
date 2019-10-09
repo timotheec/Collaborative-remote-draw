@@ -109,7 +109,10 @@ public class SocketClient extends AsyncTask<Void, Bitmap, Void> {
         int w = in.readInt();
         int h = in.readInt();
         byte[] imgBytes = new byte[w * h * 4]; // 4 byte ABGR
+        Log.i("INFO", "Image size (before): " + w + " : " + h);
         in.readFully(imgBytes);
+        Log.i("INFO", "Image size (after): " + w + " : " + h);
+
 
         // Convert 4 byte interleaved ABGR to int packed ARGB
         int[] pixels = new int[w * h];
