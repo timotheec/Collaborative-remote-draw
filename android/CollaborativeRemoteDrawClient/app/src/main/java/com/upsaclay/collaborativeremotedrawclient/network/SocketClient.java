@@ -12,18 +12,20 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Random;
 
-public class SocketClient extends AsyncTask<Void, Void, Void> {
+public class SocketClient extends AsyncTask<Void, Bitmap, Void> {
     private Socket socket = null;
     private PrintWriter writer = null;
     private BufferedInputStream reader = null;
     private String host;
     private int port;
+    private DataListener dataListener;
 
-    private String[] listCommands = {"BACKGROUND", "CLOSE"};
+    private String[] listCommands = {"BACKGROUND"};
 
-    public SocketClient(String host, int port) {
+    public SocketClient(String host, int port, DataListener dataListener) {
         this.host = host;
         this.port = port;
+        this.dataListener = dataListener;
     }
 
     @Override
@@ -36,9 +38,9 @@ public class SocketClient extends AsyncTask<Void, Void, Void> {
             e.printStackTrace();
         }
 
-        while (true) {
-            if (socket == null || isCancelled() || socket.isClosed())
-                break;
+//        while (true) {
+//            if (socket == null || isCancelled() || socket.isClosed())
+//                break;
 
             try {
                 writer = new PrintWriter(socket.getOutputStream(), true);
@@ -54,7 +56,7 @@ public class SocketClient extends AsyncTask<Void, Void, Void> {
                 // Wait for the server answer
                 if (commande == "BACKGROUND") {
                     Bitmap image = readImage();
-                    Log.i("INFO", "\t * Server answer : " + image.getHeight() + " : " + image.getWidth());
+                    publishProgress(image);
                 } else if (commande == "CLOSE") {
                     String response = read();
                     Log.i("INFO", "\t * Server answer : " + response);
@@ -62,12 +64,17 @@ public class SocketClient extends AsyncTask<Void, Void, Void> {
 
             } catch (Exception e) {
                 Log.i("INFO", "Connection closed");
-                break;
+//                break;
             }
-        }
+//        }
 
         closeSocket();
         return null;
+    }
+
+    @Override
+    protected void onProgressUpdate(Bitmap... progress) {
+        dataListener.onReceiveImage(progress[0]);
     }
 
     private void closeSocket() {

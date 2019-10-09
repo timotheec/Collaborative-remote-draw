@@ -109,7 +109,9 @@ public class MainActivity extends AppCompatActivity {
         ipAddr = intent.getStringExtra("ip_addr");
         portNum = Integer.valueOf(intent.getStringExtra("port_num"));
 
-        new SocketClient(ipAddr, portNum).execute();
+        DrawView drawView = findViewById(R.id.fullscreen_content);
+
+        new SocketClient(ipAddr, portNum, drawView).execute();
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {

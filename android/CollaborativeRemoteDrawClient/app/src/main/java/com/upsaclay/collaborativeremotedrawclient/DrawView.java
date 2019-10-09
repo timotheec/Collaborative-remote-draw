@@ -1,6 +1,7 @@
 package com.upsaclay.collaborativeremotedrawclient;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
@@ -9,9 +10,11 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.upsaclay.collaborativeremotedrawclient.network.DataListener;
+
 import java.util.ArrayList;
 
-public class DrawView extends View {
+public class DrawView extends View implements DataListener {
 
     private Paint paint;
 
@@ -62,5 +65,10 @@ public class DrawView extends View {
             }
             even = !even;
         }
+    }
+
+    @Override
+    public void onReceiveImage(Bitmap image) {
+        Log.i("INFO", "Image size : " + image.getHeight() + " : " + image.getWidth());
     }
 }
