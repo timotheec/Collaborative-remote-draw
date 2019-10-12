@@ -1,7 +1,8 @@
+package main;
+
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
@@ -12,7 +13,7 @@ public class Canvas extends JPanel {
 
 	private File file;
 	private CanvasView view;
-	
+
 	public Canvas() {
 		view = new CanvasView(this);
 	}

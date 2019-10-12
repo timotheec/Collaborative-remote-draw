@@ -1,10 +1,10 @@
-import network.NetworkHelper;
+package main;
 
 public class Main {
 
 	public static void main(String[] args) {
 		// Launch the server
-		final String HOST = NetworkHelper.getHostAdress();
+		final String HOST = network.NetworkHelper.getHostAdress();
 		final int PORT = 5001;
 		new network.Server(HOST, PORT).open();
 		System.out.println("Server running on " + HOST + ":" + PORT);

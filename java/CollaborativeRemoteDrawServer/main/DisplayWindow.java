@@ -1,3 +1,5 @@
+package main;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.io.File;
@@ -79,7 +81,9 @@ public class DisplayWindow extends JFrame {
 			int chooserStatus = fileChooser.showOpenDialog(this);
 			if (chooserStatus == JFileChooser.APPROVE_OPTION && fileChooser.getSelectedFile().isFile())
 				try {
-					canvas.setImage(fileChooser.getSelectedFile().getPath());
+					String imagePath = fileChooser.getSelectedFile().getPath();
+					canvas.setImage(imagePath);
+					AppConfig.getInstance().setImagePath(imagePath);
 					pack();
 				} catch (IOException exception) {
 					// TODO : Show up the error on a dialog window

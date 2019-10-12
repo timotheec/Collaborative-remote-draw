@@ -1,17 +1,13 @@
 package network;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
 import java.io.BufferedInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
 
-import javax.imageio.ImageIO;
+import main.AppConfig;
 
 // Source : https://openclassrooms.com/fr/courses/2654601-java-et-la-programmation-reseau/2668874-les-sockets-cote-serveur
 // Note : code is inspire from an openclassrooms solutions but completly adpated to our needs.
@@ -54,8 +50,7 @@ public class ClientProcessor implements Runnable {
 
 				switch (response.toUpperCase()) {
 				case "BACKGROUND":
-					sendImage(ImageIO.read(new File("D:\\boi.png"))); // TODO : Remove hardcoded link
-																							// to the image
+					NetworkHelper.sendImage(AppConfig.getInstance().getImage(), sock);
 					System.out.println("image sent");
 					break;
 				case "CLOSE":
@@ -94,20 +89,6 @@ public class ClientProcessor implements Runnable {
 		stream = reader.read(b);
 		response = new String(b, 0, stream);
 		return response;
-	}
-
-	// Sent an image
-	private void sendImage(BufferedImage image) {
-		try {
-			byte[] imgBytes = ((DataBufferByte) image.getData().getDataBuffer()).getData();
-			DataOutputStream out = new DataOutputStream(sock.getOutputStream());
-			out.writeInt(image.getWidth());
-			out.writeInt(image.getHeight());
-			out.write(imgBytes);
-			out.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 }
