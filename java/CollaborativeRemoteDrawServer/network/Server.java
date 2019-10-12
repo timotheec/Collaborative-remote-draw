@@ -8,6 +8,8 @@ import java.net.UnknownHostException;
 
 // Source : https://openclassrooms.com/fr/courses/2654601-java-et-la-programmation-reseau/2668874-les-sockets-cote-serveur
 public class Server {
+	
+	private final static int MAX_CLIENT_CONNECTIONS = 100;
 
 	// Declare default values
 	private int port = 2345;
@@ -17,11 +19,9 @@ public class Server {
 
 	public Server() {
 		try {
-			server = new ServerSocket(port, 100, InetAddress.getByName(host));
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
+			server = new ServerSocket(port, MAX_CLIENT_CONNECTIONS, InetAddress.getByName(host));
 		} catch (IOException e) {
-			e.printStackTrace();
+			e.printStackTrace(System.err);
 		}
 	}
 
@@ -29,11 +29,9 @@ public class Server {
 		host = pHost;
 		port = pPort;
 		try {
-			server = new ServerSocket(port, 100, InetAddress.getByName(host));
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
+			server = new ServerSocket(port, MAX_CLIENT_CONNECTIONS, InetAddress.getByName(host));
 		} catch (IOException e) {
-			e.printStackTrace();
+			e.printStackTrace(System.err);
 		}
 	}
 
@@ -52,13 +50,13 @@ public class Server {
 						t.start();
 
 					} catch (IOException e) {
-						e.printStackTrace();
+						e.printStackTrace(System.err);
 					}
 				}
 				try {
 					server.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					e.printStackTrace(System.err);
 					server = null;
 				}
 			}
