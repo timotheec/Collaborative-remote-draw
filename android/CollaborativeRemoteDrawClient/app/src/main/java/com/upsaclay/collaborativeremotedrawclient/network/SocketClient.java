@@ -5,7 +5,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -20,7 +19,7 @@ public class SocketClient extends AsyncTask<Void, Bitmap, Void> {
     private int port;
     private DataListener dataListener;
 
-    private String[] listCommands = {"BACKGROUND"};
+    private String[] listCommands = {"CLOSE"};
 
     public SocketClient(String host, int port, DataListener dataListener) {
         this.host = host;
@@ -38,9 +37,9 @@ public class SocketClient extends AsyncTask<Void, Bitmap, Void> {
             e.printStackTrace();
         }
 
-//        while (true) {
-//            if (socket == null || isCancelled() || socket.isClosed())
-//                break;
+        while (true) {
+            if (socket == null || isCancelled() || socket.isClosed())
+                break;
 
             try {
                 writer = new PrintWriter(socket.getOutputStream(), true);
@@ -54,19 +53,16 @@ public class SocketClient extends AsyncTask<Void, Bitmap, Void> {
                 Log.i("INFO", "Command " + commande + " sent to the server.");
 
                 // Wait for the server answer
-                if (commande == "BACKGROUND") {
-                    Bitmap image = readImage();
-                    publishProgress(image);
-                } else if (commande == "CLOSE") {
+                if (commande == "CLOSE") {
                     String response = read();
                     Log.i("INFO", "\t * Server answer : " + response);
                 }
 
             } catch (Exception e) {
                 Log.i("INFO", "Connection closed");
-//                break;
+                break;
             }
-//        }
+        }
 
         closeSocket();
         return null;
@@ -102,30 +98,4 @@ public class SocketClient extends AsyncTask<Void, Bitmap, Void> {
         return response;
     }
 
-    private Bitmap readImage() throws Exception {
-
-        // Source : https://stackoverflow.com/questions/29453417/send-java-bufferedimage-to-bitmap-android/29476525#29476525
-        DataInputStream in = new DataInputStream(socket.getInputStream());
-        int w = in.readInt();
-        int h = in.readInt();
-        byte[] imgBytes = new byte[w * h * 4]; // 4 byte ABGR
-        Log.i("INFO", "Image size (before): " + w + " : " + h);
-        in.readFully(imgBytes);
-        Log.i("INFO", "Image size (after): " + w + " : " + h);
-
-
-        // Convert 4 byte interleaved ABGR to int packed ARGB
-        int[] pixels = new int[w * h];
-        for (int i = 0; i < pixels.length; i++) {
-            int byteIndex = i * 4;
-            pixels[i] =
-                    ((imgBytes[byteIndex] & 0xFF) << 24)
-                            | ((imgBytes[byteIndex + 3] & 0xFF) << 16)
-                            | ((imgBytes[byteIndex + 2] & 0xFF) << 8)
-                            | (imgBytes[byteIndex + 1] & 0xFF);
-        }
-
-        // Finally, create bitmap from packed int ARGB, using ARGB_8888
-        return Bitmap.createBitmap(pixels, w, h, Bitmap.Config.ARGB_8888);
-    }
 }

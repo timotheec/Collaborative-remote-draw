@@ -11,19 +11,13 @@ import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.upsaclay.collaborativeremotedrawclient.network.SocketClient;
+import com.upsaclay.collaborativeremotedrawclient.network.DownloadBackground;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
 public class MainActivity extends AppCompatActivity {
-
-//    private final static String HOST = "192.168.0.102";
-//    private final static int PORT = 5001;
-
-    private String ipAddr;
-    private int portNum;
 
     /**
      * Whether or not the system UI should be auto-hidden after
@@ -106,12 +100,17 @@ public class MainActivity extends AppCompatActivity {
         mContentView = findViewById(R.id.fullscreen_content);
 
         Intent intent = getIntent();
-        ipAddr = intent.getStringExtra("ip_addr");
-        portNum = Integer.valueOf(intent.getStringExtra("port_num"));
+        String ipAddr = intent.getStringExtra("ip_addr");
+        int portNum = Integer.valueOf(intent.getStringExtra("port_num"));
+
+        AppConfig.getInstance().setServerIp(ipAddr);
+        AppConfig.getInstance().setServerPort(portNum);
 
         DrawView drawView = findViewById(R.id.fullscreen_content);
+        new DownloadBackground(AppConfig.getInstance().getServerIp(),
+                AppConfig.getInstance().getServerPort(), drawView).execute();
 
-        new SocketClient(ipAddr, portNum, drawView).execute();
+        // new SocketClient(ipAddr, portNum, drawView).execute();
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {

@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.upsaclay.collaborativeremotedrawclient.network.DataListener;
+import com.upsaclay.collaborativeremotedrawclient.network.DownloadBackground;
 
 import java.util.ArrayList;
 
@@ -26,7 +27,7 @@ public class DrawView extends View implements DataListener {
 
     private boolean connected;
 
-    public DrawView(Context context, AttributeSet attrSet){
+    public DrawView(Context context, AttributeSet attrSet) {
         super(context, attrSet);
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         pointList = new ArrayList<>();
@@ -35,8 +36,8 @@ public class DrawView extends View implements DataListener {
         connected = false;
     }
 
-    public boolean onTouchEvent(MotionEvent e){
-        switch (e.getAction()){
+    public boolean onTouchEvent(MotionEvent e) {
+        switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 //Log.d("touch","DOWN " + e.getX() + " " + e.getY());
                 startPos = new Point(Math.round(e.getX()), Math.round(e.getY()));
@@ -57,16 +58,16 @@ public class DrawView extends View implements DataListener {
         return true;
     }
 
-    public void onDraw(Canvas canvas){
+    public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if(connected)canvas.drawBitmap(image, 0, 0, paint);
+        if (connected) canvas.drawBitmap(image, 0, 0, paint);
         paint.setStrokeWidth(10);
         Point startPos = new Point(0, 0);
         boolean even = true;
-        for(Point p : pointList) {
-            if(even){
+        for (Point p : pointList) {
+            if (even) {
                 startPos = p;
-            }else {
+            } else {
                 canvas.drawLine(startPos.x, startPos.y, p.x, p.y, paint);
             }
             even = !even;
