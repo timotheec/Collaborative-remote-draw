@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.upsaclay.collaborativeremotedrawclient.DrawView.DrawView;
 import com.upsaclay.collaborativeremotedrawclient.network.DownloadBackground;
 
 /**

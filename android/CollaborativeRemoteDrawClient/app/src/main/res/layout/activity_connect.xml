@@ -23,7 +23,6 @@
         android:ems="10"
         android:hint="@string/ip_addr"
         android:inputType="textPersonName"
-        android:text="10.55.227.3"
         app:layout_constraintBottom_toTopOf="@+id/portNumInput"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

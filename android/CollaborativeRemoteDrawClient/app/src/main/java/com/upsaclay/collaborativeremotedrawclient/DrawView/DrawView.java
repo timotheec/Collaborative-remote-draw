@@ -1,4 +1,4 @@
-package com.upsaclay.collaborativeremotedrawclient;
+package com.upsaclay.collaborativeremotedrawclient.DrawView;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -11,47 +11,51 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.upsaclay.collaborativeremotedrawclient.network.DataListener;
-import com.upsaclay.collaborativeremotedrawclient.network.DownloadBackground;
 
 import java.util.ArrayList;
 
 public class DrawView extends View implements DataListener {
 
-    private Paint paint;
+    private DrawViewModel model;
 
-    private ArrayList<Point> pointList;
+    private DrawViewView view;
 
-    private Point startPos, endPos;
-
-    private Bitmap image;
-
-    private boolean connected;
 
     public DrawView(Context context, AttributeSet attrSet) {
         super(context, attrSet);
-        paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        pointList = new ArrayList<>();
-        startPos = new Point(0, 0);
-        endPos = new Point(0, 0);
-        connected = false;
+
+        model = new DrawViewModel();
+        view = new DrawViewView(this);
+    }
+
+    public DrawViewModel getModel() {
+        return model;
+    }
+
+    @Override
+    public void onReceiveImage(Bitmap image) {
+
+        model.setImage(image);
+        this.invalidate();
     }
 
     public boolean onTouchEvent(MotionEvent e) {
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                //Log.d("touch","DOWN " + e.getX() + " " + e.getY());
-                startPos = new Point(Math.round(e.getX()), Math.round(e.getY()));
+                //The user touches the screen, starts a new action
+
+                model.beginAction(e.getX(), e.getY());
                 break;
             case MotionEvent.ACTION_MOVE:
-                //Log.d("touch","MOVE " + e.getX() + " " + e.getY());
-                endPos = new Point(Math.round(e.getX()), Math.round(e.getY()));
-                pointList.add(startPos);
-                pointList.add(endPos);
-                startPos = endPos;
+                //The user moves their finger, continue the action
+
+                model.continueAction(e.getX(), e.getY());
                 this.invalidate();
                 break;
             case MotionEvent.ACTION_UP:
-                //Log.d("touch","UP");
+                //The user releases the screen, end the action
+
+                model.endAction();
                 this.invalidate();
                 break;
         }
@@ -60,7 +64,8 @@ public class DrawView extends View implements DataListener {
 
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (connected) canvas.drawBitmap(image, 0, 0, paint);
+
+        /*if (connected) canvas.drawBitmap(image, 0, 0, paint);
         paint.setStrokeWidth(10);
         Point startPos = new Point(0, 0);
         boolean even = true;
@@ -71,17 +76,8 @@ public class DrawView extends View implements DataListener {
                 canvas.drawLine(startPos.x, startPos.y, p.x, p.y, paint);
             }
             even = !even;
-        }
-    }
+        }*/
 
-    @Override
-    public void onReceiveImage(Bitmap image) {
-        Log.i("INFO", "Image size : " + image.getHeight() + " : " + image.getWidth());
-
-        this.image = image;
-
-        connected = true;
-
-        this.invalidate();
+        view.draw(canvas);
     }
 }
