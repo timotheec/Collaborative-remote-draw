@@ -13,6 +13,7 @@ import android.view.View;
 
 import com.upsaclay.collaborativeremotedrawclient.DrawView.DrawView;
 import com.upsaclay.collaborativeremotedrawclient.network.DownloadBackground;
+import com.upsaclay.collaborativeremotedrawclient.network.SocketClient;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -100,18 +101,13 @@ public class MainActivity extends AppCompatActivity {
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
 
-        Intent intent = getIntent();
-        String ipAddr = intent.getStringExtra("ip_addr");
-        int portNum = Integer.valueOf(intent.getStringExtra("port_num"));
-
-        AppConfig.getInstance().setServerIp(ipAddr);
-        AppConfig.getInstance().setServerPort(portNum);
-
         DrawView drawView = findViewById(R.id.fullscreen_content);
-        new DownloadBackground(AppConfig.getInstance().getServerIp(),
-                AppConfig.getInstance().getServerPort(), drawView).execute();
 
-        // new SocketClient(ipAddr, portNum, drawView).execute();
+        String ipAddr = AppConfig.getInstance().getServerIp();
+        int portNum = AppConfig.getInstance().getServerPort();
+
+        new DownloadBackground(ipAddr, portNum, drawView).execute();
+        new SocketClient(ipAddr, portNum, drawView).execute();
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {

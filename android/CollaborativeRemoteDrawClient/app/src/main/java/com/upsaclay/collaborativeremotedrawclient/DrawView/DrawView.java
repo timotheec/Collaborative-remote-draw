@@ -39,6 +39,7 @@ public class DrawView extends View implements DataListener {
         this.invalidate();
     }
 
+    @Override
     public boolean onTouchEvent(MotionEvent e) {
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -62,6 +63,7 @@ public class DrawView extends View implements DataListener {
         return true;
     }
 
+    @Override
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 

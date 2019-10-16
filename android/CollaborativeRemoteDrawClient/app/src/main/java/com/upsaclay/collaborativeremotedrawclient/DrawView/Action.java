@@ -29,4 +29,5 @@ public class Action {
         yCoords.add(y);
         length++;
     }
+
 }

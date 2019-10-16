@@ -4,6 +4,10 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.upsaclay.collaborativeremotedrawclient.Shared.Point;
+import com.upsaclay.collaborativeremotedrawclient.Shared.Stroke;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -37,16 +41,19 @@ public class SocketClient extends AsyncTask<Void, Bitmap, Void> {
             e.printStackTrace();
         }
 
-        while (true) {
-            if (socket == null || isCancelled() || socket.isClosed())
-                break;
+//        while (true) {
+//            if (socket == null || isCancelled() || socket.isClosed())
+//                break;
 
             try {
                 writer = new PrintWriter(socket.getOutputStream(), true);
                 reader = new BufferedInputStream(socket.getInputStream());
 
                 // Send the command to the server
-                String commande = getCommand();
+//                String commande = getCommand();
+                Gson gson = new Gson();
+                String commande = gson.toJson(new Stroke(new Point(1.0F, 1.2F)));
+
                 writer.write(commande);
                 writer.flush();
 
@@ -60,9 +67,9 @@ public class SocketClient extends AsyncTask<Void, Bitmap, Void> {
 
             } catch (Exception e) {
                 Log.i("INFO", "Connection closed");
-                break;
+//                break;
             }
-        }
+//        }
 
         closeSocket();
         return null;
