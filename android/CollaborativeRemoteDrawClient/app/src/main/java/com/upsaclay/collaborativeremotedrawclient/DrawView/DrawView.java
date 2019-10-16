@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.upsaclay.collaborativeremotedrawclient.Shared.Stroke;
 import com.upsaclay.collaborativeremotedrawclient.network.DataListener;
 
 import java.util.ArrayList;
@@ -20,12 +21,18 @@ public class DrawView extends View implements DataListener {
 
     private DrawViewView view;
 
+    private DataListener dataListener;
+
 
     public DrawView(Context context, AttributeSet attrSet) {
         super(context, attrSet);
 
         model = new DrawViewModel();
         view = new DrawViewView(this);
+    }
+
+    public void setDataListener(DataListener dataListener) {
+        this.dataListener = dataListener;
     }
 
     public DrawViewModel getModel() {
@@ -81,5 +88,10 @@ public class DrawView extends View implements DataListener {
         }*/
 
         view.draw(canvas);
+    }
+
+    // Useless
+    @Override
+    public void onRecieveStroke(Stroke stroke) {
     }
 }

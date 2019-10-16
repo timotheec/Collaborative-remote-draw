@@ -15,13 +15,14 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Random;
 
-public class SocketClient extends AsyncTask<Void, Bitmap, Void> {
+public class SocketClient extends AsyncTask<Void, Bitmap, Void> implements DataListener {
     private Socket socket = null;
     private PrintWriter writer = null;
     private BufferedInputStream reader = null;
     private String host;
     private int port;
     private DataListener dataListener;
+    private Gson gson = new Gson();
 
     private String[] listCommands = {"CLOSE"};
 
@@ -112,4 +113,15 @@ public class SocketClient extends AsyncTask<Void, Bitmap, Void> {
         return response;
     }
 
+    @Override
+    public void onReceiveImage(Bitmap image) {
+    }
+
+    @Override
+    public void onRecieveStroke(Stroke stroke) {
+        stroke.add(new Point(1.0F, 1.2F));
+
+        writer.write(gson.toJson(stroke));
+        writer.flush();
+    }
 }
