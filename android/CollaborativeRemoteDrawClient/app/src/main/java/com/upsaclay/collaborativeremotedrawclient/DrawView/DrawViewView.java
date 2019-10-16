@@ -3,7 +3,6 @@ package com.upsaclay.collaborativeremotedrawclient.DrawView;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
 
 public class DrawViewView {
 

@@ -41,9 +41,10 @@ public class SocketClient extends AsyncTask<Void, Bitmap, Void> {
             e.printStackTrace();
         }
 
+/*
 //        while (true) {
-//            if (socket == null || isCancelled() || socket.isClosed())
-//                break;
+            if (socket == null || isCancelled() || socket.isClosed())
+                break;
 
             try {
                 writer = new PrintWriter(socket.getOutputStream(), true);
@@ -52,7 +53,11 @@ public class SocketClient extends AsyncTask<Void, Bitmap, Void> {
                 // Send the command to the server
 //                String commande = getCommand();
                 Gson gson = new Gson();
-                String commande = gson.toJson(new Stroke(new Point(1.0F, 1.2F)));
+
+                Stroke stroke = new Stroke();
+                stroke.add(new Point(1.0F, 1.2F));
+
+                String commande = gson.toJson(stroke);
 
                 writer.write(commande);
                 writer.flush();
@@ -70,6 +75,8 @@ public class SocketClient extends AsyncTask<Void, Bitmap, Void> {
 //                break;
             }
 //        }
+
+ */
 
         closeSocket();
         return null;

@@ -3,6 +3,10 @@ package com.upsaclay.collaborativeremotedrawclient.DrawView;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.upsaclay.collaborativeremotedrawclient.Shared.Point;
+import com.upsaclay.collaborativeremotedrawclient.Shared.Stroke;
+
 import java.util.ArrayList;
 
 public class DrawViewModel {
@@ -70,6 +74,16 @@ public class DrawViewModel {
 
     public void endAction(){
         actionList.add(curAction);
+
+        Stroke s = new Stroke();
+
+        for (int i = 0; i < curAction.length; i++){
+            s.add(new Point(curAction.getX(i),curAction.getY(i)));
+        }
+        Gson gson = new Gson();
+        String command = gson.toJson(s);
+        Log.i("Command to send", command);
+
         performingAction = false;
     }
 
