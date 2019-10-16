@@ -21,9 +21,6 @@ public class DrawView extends View implements DataListener {
 
     private DrawViewView view;
 
-    private DataListener dataListener;
-
-
     public DrawView(Context context, AttributeSet attrSet) {
         super(context, attrSet);
 
@@ -31,12 +28,12 @@ public class DrawView extends View implements DataListener {
         view = new DrawViewView(this);
     }
 
-    public void setDataListener(DataListener dataListener) {
-        this.dataListener = dataListener;
-    }
-
     public DrawViewModel getModel() {
         return model;
+    }
+
+    public void setDataListener(DataListener dataListener) {
+        model.setDataListener(dataListener);
     }
 
     @Override

@@ -6,10 +6,13 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.upsaclay.collaborativeremotedrawclient.Shared.Point;
 import com.upsaclay.collaborativeremotedrawclient.Shared.Stroke;
+import com.upsaclay.collaborativeremotedrawclient.network.DataListener;
 
 import java.util.ArrayList;
 
 public class DrawViewModel {
+
+    private DataListener dataListener;
 
     private ArrayList<Action> actionList;
     private Action curAction;
@@ -80,12 +83,18 @@ public class DrawViewModel {
         for (int i = 0; i < curAction.length; i++){
             s.add(new Point(curAction.getX(i),curAction.getY(i)));
         }
-        Gson gson = new Gson();
+        /*Gson gson = new Gson();
         String command = gson.toJson(s);
         Log.i("Command to send", command);
+        */
+
+        dataListener.onRecieveStroke(s);
 
         performingAction = false;
     }
 
 
+    public void setDataListener(DataListener dataListener) {
+        this.dataListener = dataListener;
+    }
 }
