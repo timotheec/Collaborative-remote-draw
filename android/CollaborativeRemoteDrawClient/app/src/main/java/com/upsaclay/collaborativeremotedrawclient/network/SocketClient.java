@@ -12,7 +12,6 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Random;
 
 public class SocketClient extends AsyncTask<Void, Bitmap, Void> implements DataListener {
@@ -36,24 +35,23 @@ public class SocketClient extends AsyncTask<Void, Bitmap, Void> implements DataL
     protected Void doInBackground(Void... arg0) {
         try {
             socket = new Socket(host, port);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
+            writer = new PrintWriter(socket.getOutputStream(), true);
+            reader = new BufferedInputStream(socket.getInputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-/*
-//        while (true) {
+        while (true)
             if (socket == null || isCancelled() || socket.isClosed())
                 break;
 
+/*
             try {
                 writer = new PrintWriter(socket.getOutputStream(), true);
                 reader = new BufferedInputStream(socket.getInputStream());
 
                 // Send the command to the server
 //                String commande = getCommand();
-                Gson gson = new Gson();
 
                 Stroke stroke = new Stroke();
                 stroke.add(new Point(1.0F, 1.2F));
@@ -76,16 +74,11 @@ public class SocketClient extends AsyncTask<Void, Bitmap, Void> implements DataL
 //                break;
             }
 //        }
+*/
 
- */
 
         closeSocket();
         return null;
-    }
-
-    @Override
-    protected void onProgressUpdate(Bitmap... progress) {
-        dataListener.onReceiveImage(progress[0]);
     }
 
     private void closeSocket() {
@@ -119,8 +112,6 @@ public class SocketClient extends AsyncTask<Void, Bitmap, Void> implements DataL
 
     @Override
     public void onRecieveStroke(Stroke stroke) {
-        stroke.add(new Point(1.0F, 1.2F));
-
         writer.write(gson.toJson(stroke));
         writer.flush();
     }
