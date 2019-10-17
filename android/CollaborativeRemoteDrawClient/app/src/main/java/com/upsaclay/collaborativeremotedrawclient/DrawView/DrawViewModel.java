@@ -12,8 +12,6 @@ import java.util.ArrayList;
 
 public class DrawViewModel {
 
-    private DataListener dataListener;
-
     private ArrayList<Action> actionList;
     private Action curAction;
     private boolean performingAction;
@@ -21,6 +19,7 @@ public class DrawViewModel {
 
     private Bitmap image;
     private boolean imageSet;
+    private DataSender dataSender;
 
     public DrawViewModel(){
         actionList = new ArrayList<>();
@@ -85,13 +84,13 @@ public class DrawViewModel {
         }
 
         // send data to the server
-        new Thread(new DataSender(s, dataListener)).start();
+        dataSender.send(s);
 
         performingAction = false;
     }
 
 
     public void setDataListener(DataListener dataListener) {
-        this.dataListener = dataListener;
+        this.dataSender = new DataSender(dataListener);
     }
 }
