@@ -1,8 +1,11 @@
 package com.upsaclay.collaborativeremotedrawclient.DrawView;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+
+import com.upsaclay.collaborativeremotedrawclient.Shared.Stroke;
 
 public class DrawViewView {
 
@@ -17,37 +20,47 @@ public class DrawViewView {
 
     public void draw(Canvas canvas) {
         DrawViewModel model = controller.getModel();
-        if (model.imageIsSet()) canvas.drawBitmap(model.getImage(), 0, 0, paint);
+        //draw image
+        if (model.imageIsSet()){
+            Bitmap image = model.getImage();
+            Bitmap scaledImage = Bitmap.createScaledBitmap(image, (int)(image.getWidth()*model.getScale()), (int)(image.getHeight()*model.getScale()), true);
+            canvas.drawBitmap(scaledImage, model.getOx(), model.getOy(), paint);
+        }
         paint.setStrokeWidth(10);
         float startX = 0;
         float startY = 0;
+        float endX = 0;
+        float endY = 0;
 
-        //draw previous actions
+        //draw previous strokes
         paint.setColor(Color.BLACK);
-        for (Action a : model.getActionList()) {
-            for(int i = 0; i < a.length; i++){
+        for (Stroke s : model.getStrokeList()) {
+            for(int i = 0; i < s.getLength(); i++){
                 if(i % 2 == 0){
-                    startX = a.getX(i);
-                    startY = a.getY(i);
+                    startX = model.imageToScreenX(s.getPoint(i).x);
+                    startY = model.imageToScreenY(s.getPoint(i).y);
                 } else {
-                    canvas.drawLine(startX, startY, a.getX(i), a.getY(i), paint);
+                    endX = model.imageToScreenX(s.getPoint(i).x);
+                    endY = model.imageToScreenY(s.getPoint(i).y);
+                    canvas.drawLine(startX, startY, endX, endY, paint);
                 }
             }
         }
 
-        //draw the current action
+        //draw the current stroke
         paint.setColor(Color.BLUE);
         if(model.isPerformingAction()) {
-            Action a = model.getCurAction();
-            for(int i = 0; i < a.length; i++){
+            Stroke s = model.getCurStroke();
+            for(int i = 0; i < s.getLength(); i++){
                 if(i % 2 == 0){
-                    startX = a.getX(i);
-                    startY = a.getY(i);
+                    startX = model.imageToScreenX(s.getPoint(i).x);
+                    startY = model.imageToScreenY(s.getPoint(i).y);
                 } else {
-                    canvas.drawLine(startX, startY, a.getX(i), a.getY(i), paint);
+                    endX = model.imageToScreenX(s.getPoint(i).x);
+                    endY = model.imageToScreenY(s.getPoint(i).y);
+                    canvas.drawLine(startX, startY, endX, endY, paint);
                 }
             }
         }
-
     }
 }

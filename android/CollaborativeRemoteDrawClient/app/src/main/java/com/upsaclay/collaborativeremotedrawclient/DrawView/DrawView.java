@@ -23,7 +23,6 @@ public class DrawView extends View implements DataListener {
 
     public DrawView(Context context, AttributeSet attrSet) {
         super(context, attrSet);
-
         model = new DrawViewModel();
         view = new DrawViewView(this);
     }
@@ -34,13 +33,6 @@ public class DrawView extends View implements DataListener {
 
     public void setDataListener(DataListener dataListener) {
         model.setDataListener(dataListener);
-    }
-
-    @Override
-    public void onReceiveImage(Bitmap image) {
-
-        model.setImage(image);
-        this.invalidate();
     }
 
     @Override
@@ -68,22 +60,20 @@ public class DrawView extends View implements DataListener {
     }
 
     @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        model.setViewSize(w, h);
+    }
+
+    @Override
+    public void onReceiveImage(Bitmap image) {
+        model.setImage(image);
+        this.invalidate();
+    }
+
+    @Override
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
-        /*if (connected) canvas.drawBitmap(image, 0, 0, paint);
-        paint.setStrokeWidth(10);
-        Point startPos = new Point(0, 0);
-        boolean even = true;
-        for (Point p : pointList) {
-            if (even) {
-                startPos = p;
-            } else {
-                canvas.drawLine(startPos.x, startPos.y, p.x, p.y, paint);
-            }
-            even = !even;
-        }*/
-
         view.draw(canvas);
     }
 

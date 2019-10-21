@@ -11,4 +11,12 @@ public class Stroke {
         points.add(point);
     }
 
+    public int getLength() {
+        return points.size();
+    }
+
+    public Point getPoint(int i){
+        return points.get(i);
+    }
+
 }
