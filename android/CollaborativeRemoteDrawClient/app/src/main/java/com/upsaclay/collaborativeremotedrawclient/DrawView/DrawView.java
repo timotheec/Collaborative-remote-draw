@@ -63,6 +63,7 @@ public class DrawView extends View implements DataListener {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         model.setViewSize(w, h);
+        this.invalidate();
     }
 
     @Override
@@ -80,5 +81,15 @@ public class DrawView extends View implements DataListener {
     // Useless
     @Override
     public void onRecieveStroke(Stroke stroke) {
+    }
+
+    public void zoom(){
+        model.zoom();
+        this.invalidate();
+    }
+
+    public void centerImage(){
+        model.centerImage();
+        this.invalidate();
     }
 }

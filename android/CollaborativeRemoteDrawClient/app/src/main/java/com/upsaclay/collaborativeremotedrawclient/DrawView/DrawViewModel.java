@@ -20,10 +20,14 @@ public class DrawViewModel {
     //used to store image data
     private Bitmap image;
     private boolean imageSet;
-    //image offset (distance on screen from top left corner)
-    private int ox, oy;
+    //image offset (distance from top left corner of the image)
+    private int oxI, oyI;
     //image scale
     private float scale;
+    //screen offset (distance from top left corner of the display)
+    private int oxS, oyS;
+    //screen scale
+    private float scaleS;
 
     //used to store stroke data
     private ArrayList<Stroke> strokeList;
@@ -35,10 +39,17 @@ public class DrawViewModel {
         vw = 1;
         vh = 1;
 
+
         imageSet = false;
-        ox = 0;
-        oy = 0;
+
+        oxI = 0;
+        oyI = 0;
         scale = 1;
+
+        oxS = 0;
+        oyS = 0;
+        scaleS = 1;
+
 
         strokeList = new ArrayList<>();
         curStroke = new Stroke();
@@ -54,16 +65,14 @@ public class DrawViewModel {
         return image;
     }
 
-    public int getOx() {
-        return ox;
-    }
+    public int getOx() { return (int)(oxS + scaleS * oxI); }
 
     public int getOy() {
-        return oy;
+        return (int)(oyS + scaleS * oyI);
     }
 
     public float getScale() {
-        return scale;
+        return scaleS * scale;
     }
 
     public ArrayList<Stroke> getStrokeList() {
@@ -102,31 +111,36 @@ public class DrawViewModel {
         double screenRatio = vw / (double)vh;
         if(imageRatio >= screenRatio){
             //the image is wider than the screen, it should take the full width and be centered vertically
-            scale = vw / (float)image.getWidth();
-            ox = 0;
-            oy = (int)((vh/2.0) - (image.getHeight()*scale/2));
+            scaleS = vw / (float)image.getWidth();
+            oxS = 0;
+            oyS = (int)((vh/2.0) - (image.getHeight()*scaleS/2));
         } else {
             //the image is taller than the screen, it should take the full height and be centered horizontally
-            scale = vh / (float)image.getHeight();
-            ox = (int)((vw/2.0) - (image.getWidth()*scale/2));
-            oy = 0;
+            scaleS = vh / (float)image.getHeight();
+            oxS = (int)((vw/2.0) - (image.getWidth()*scaleS/2));
+            oyS = 0;
         }
+
+        //reset zoom
+        oxI = 0;
+        oyI = 0;
+        scale = 1;
     }
 
     public float screenToImageX(float x){
-        return (x - ox) / scale;
+        return (x - getOx()) / getScale();
     }
 
     public float screenToImageY(float y){
-        return (y - oy) / scale;
+        return (y - getOy()) / getScale();
     }
 
     public float imageToScreenX(float x){
-        return x*scale + ox;
+        return x*getScale() + getOx();
     }
 
     public float imageToScreenY(float y){
-        return y*scale + oy;
+        return y*getScale() + getOy();
     }
 
     public void beginAction(float x, float y){
@@ -145,22 +159,16 @@ public class DrawViewModel {
     }
 
     public void endAction(){
-        //TODO: REMOVE
-        /*actionList.add(curAction);
-        Stroke s = new Stroke();
-
-        for (int i = 0; i < curAction.length; i++){
-            s.add(new Point(curAction.getX(i),curAction.getY(i)));
-        }
-
-        // send data to the server
-        dataSender.send(s);
-        */
-
         strokeList.add(curStroke);
         dataSender.send(curStroke);
 
         performingAction = false;
+    }
+
+    public void zoom(){
+        scale = 2;
+        oxI = -image.getWidth()/2;
+        oyI = -image.getHeight()/2;
     }
 
 

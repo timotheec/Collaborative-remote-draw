@@ -33,12 +33,21 @@
             android:orientation="horizontal"
             tools:ignore="UselessParent">
 
-            <TextView
-                style="?metaButtonBarButtonStyle"
+            <Button
+                android:id="@+id/center_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/toolbar" />
+                android:onClick="centerImage"
+                android:text="@string/center_image" />
+
+            <Button
+                android:id="@+id/zoom_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="zoom"
+                android:text="@string/send_zoom" />
 
         </LinearLayout>
     </FrameLayout>

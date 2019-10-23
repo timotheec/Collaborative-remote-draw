@@ -19,6 +19,7 @@ import com.upsaclay.collaborativeremotedrawclient.network.SocketClient;
  * status bar and navigation/system bar) with user interaction.
  */
 public class MainActivity extends AppCompatActivity {
+    DrawView drawView;
 
     /**
      * Whether or not the system UI should be auto-hidden after
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
     private View mContentView;
+
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -56,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         }
     };
+
     private View mControlsView;
     private final Runnable mShowPart2Runnable = new Runnable() {
         @Override
@@ -68,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
             mControlsView.setVisibility(View.VISIBLE);
         }
     };
+
     private boolean mVisible;
     private final Runnable mHideRunnable = new Runnable() {
         @Override
@@ -100,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
 
-        DrawView drawView = findViewById(R.id.fullscreen_content);
+        drawView = findViewById(R.id.fullscreen_content);
 
         String ipAddr = AppConfig.getInstance().getServerIp();
         int portNum = AppConfig.getInstance().getServerPort();
@@ -176,5 +180,17 @@ public class MainActivity extends AppCompatActivity {
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
+    }
+
+
+
+
+
+    public void centerImage(View view){
+        drawView.centerImage();
+    }
+
+    public void zoom(View view){
+        drawView.zoom();
     }
 }
