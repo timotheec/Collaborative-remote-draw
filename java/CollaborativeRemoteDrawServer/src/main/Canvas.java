@@ -5,23 +5,42 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
+
+import network.DataListener;
+import shared.Stroke;
 
 public class Canvas extends JPanel {
 
 	private File file;
 	private CanvasView view;
+	private CanvasModel model;
 
 	public Canvas() {
 		view = new CanvasView(this);
+		setModel(new CanvasModel());
+	}
+	
+	private void setModel(CanvasModel model) {
+		this.model = model;
+		model.addChangeListener(event -> repaint());
 	}
 
 	public void setImage(String imagePath) throws IOException {
 		file = new File(imagePath);
 		view.setImage(ImageIO.read(file));
 		repaint();
+	}
+	
+	public void addStroke(Stroke stroke) {
+		model.add(stroke);
+	}
+	
+	public List<Stroke> getStrokes() {
+		return model.getStrokes();
 	}
 
 	@Override

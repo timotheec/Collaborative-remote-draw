@@ -7,7 +7,10 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
 
+import com.google.gson.Gson;
+
 import main.AppConfig;
+import shared.Stroke;
 
 // Source : https://openclassrooms.com/fr/courses/2654601-java-et-la-programmation-reseau/2668874-les-sockets-cote-serveur
 // Note : code is inspire from an openclassrooms solutions but completly adpated to our needs.
@@ -16,9 +19,12 @@ public class ClientProcessor implements Runnable {
 	private Socket sock;
 	private PrintWriter writer = null;
 	private BufferedInputStream reader = null;
+	private DataListener dataListener;
+	private Gson gson = new Gson();
 
-	public ClientProcessor(Socket pSock) {
+	public ClientProcessor(Socket pSock, DataListener dataListener) {
 		sock = pSock;
+		this.dataListener = dataListener;
 	}
 
 	@Override
@@ -43,7 +49,7 @@ public class ClientProcessor implements Runnable {
 				debug += "Asking for host adress : " + remote.getAddress().getHostAddress() + ".";
 				debug += " on port : " + remote.getPort() + ".\n";
 				debug += "\t -> Command received : " + response + "\n";
-				System.out.println("\n" + debug);
+//				System.out.println("\n" + debug);
 
 				// We treat the demand correctly
 				String toSend = "";
@@ -58,6 +64,7 @@ public class ClientProcessor implements Runnable {
 					closeConnexion = true;
 					break;
 				default:
+					publishStroke(gson.fromJson(response, Stroke.class));
 					toSend = "Unknwon command";
 					break;
 				}
@@ -80,7 +87,11 @@ public class ClientProcessor implements Runnable {
 			}
 		}
 	}
-
+	
+	private void publishStroke(Stroke stroke) {
+		dataListener.onRecieveStroke(stroke);
+	}
+	
 	// Read the response from the client
 	private String read() throws IOException {
 		String response = "";

@@ -38,6 +38,10 @@ public class DisplayWindow extends JFrame {
 
 		pack();
 	}
+	
+	public Canvas getCanvas() {
+		return canvas;
+	}
 
 	private void setupFileChooser() {
 		fileChooser = new JFileChooser();

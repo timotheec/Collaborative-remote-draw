@@ -5,8 +5,11 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import main.Canvas;
+import shared.Stroke;
+
 // Source : https://openclassrooms.com/fr/courses/2654601-java-et-la-programmation-reseau/2668874-les-sockets-cote-serveur
-public class Server {
+public class Server implements DataListener {
 	
 	private final static int MAX_CLIENT_CONNECTIONS = 100;
 
@@ -15,16 +18,9 @@ public class Server {
 	private String host = "127.0.0.1";
 	private ServerSocket server = null;
 	private boolean isRunning = true;
+	private Canvas canvas;
 
-	public Server() {
-		try {
-			server = new ServerSocket(port, MAX_CLIENT_CONNECTIONS, InetAddress.getByName(host));
-		} catch (IOException e) {
-			e.printStackTrace(System.err);
-		}
-	}
-
-	public Server(String pHost, int pPort) {
+	public Server(String pHost, int pPort, Canvas canvas) {
 		host = pHost;
 		port = pPort;
 		try {
@@ -32,6 +28,7 @@ public class Server {
 		} catch (IOException e) {
 			e.printStackTrace(System.err);
 		}
+		this.canvas = canvas;
 	}
 
 	public void open() {
@@ -45,7 +42,7 @@ public class Server {
 
 						// Process the requests in a separate thread
 						System.out.println("Connexion cliente reçue.");
-						Thread t = new Thread(new ClientProcessor(client));
+						Thread t = new Thread(new ClientProcessor(client, Server.this));
 						t.start();
 
 					} catch (IOException e) {
@@ -66,5 +63,10 @@ public class Server {
 
 	public void close() {
 		isRunning = false;
+	}
+
+	@Override
+	public void onRecieveStroke(Stroke stroke) {
+		canvas.addStroke(stroke);		
 	}
 }
