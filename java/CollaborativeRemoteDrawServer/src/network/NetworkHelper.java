@@ -4,9 +4,14 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
+
+import com.google.gson.Gson;
+
+import shared.Stroke;
 
 public class NetworkHelper {
 
@@ -34,6 +39,26 @@ public class NetworkHelper {
 		} catch (IOException e) {
 			e.printStackTrace(System.err);
 		}
+	}
+
+	// Send string trough network
+	public static void sendData(final String message, final Socket socket) {		
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try (PrintWriter writer = new PrintWriter(socket.getOutputStream())) {
+					writer.write(message);
+					writer.flush();
+				} catch (IOException e) {
+					e.printStackTrace(System.err);
+				}
+			}
+		});
+	}
+	
+	// Send string trough network
+	public static void sendStroke(final Stroke stroke, final Socket socket) {
+		sendData(new Gson().toJson(stroke), socket);
 	}
 
 }

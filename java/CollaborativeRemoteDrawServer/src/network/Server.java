@@ -4,13 +4,15 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 import main.Canvas;
 import shared.Stroke;
 
 // Source : https://openclassrooms.com/fr/courses/2654601-java-et-la-programmation-reseau/2668874-les-sockets-cote-serveur
 public class Server implements DataListener {
-	
+
 	private final static int MAX_CLIENT_CONNECTIONS = 100;
 
 	// Declare default values
@@ -19,6 +21,7 @@ public class Server implements DataListener {
 	private ServerSocket server = null;
 	private boolean isRunning = true;
 	private Canvas canvas;
+	private List<Socket> clients = new ArrayList<>();
 
 	public Server(String pHost, int pPort, Canvas canvas) {
 		host = pHost;
@@ -29,6 +32,7 @@ public class Server implements DataListener {
 			e.printStackTrace(System.err);
 		}
 		this.canvas = canvas;
+		this.canvas.setDatalistener(this);
 	}
 
 	public void open() {
@@ -39,6 +43,7 @@ public class Server implements DataListener {
 					try {
 						// Waiting for a client connection
 						Socket client = server.accept();
+						clients.add(client); // TODO : remove when it is closed
 
 						// Process the requests in a separate thread
 						System.out.println("Connexion cliente reçue.");
@@ -66,7 +71,14 @@ public class Server implements DataListener {
 	}
 
 	@Override
+	public void onSendingStroke(Stroke stroke) {
+		System.out.println("ssss");
+		for(final Socket socket : clients)
+			NetworkHelper.sendStroke(stroke, socket);
+	}
+
+	@Override
 	public void onRecieveStroke(Stroke stroke) {
-		canvas.addStroke(stroke);		
+		canvas.addStroke(stroke);
 	}
 }
