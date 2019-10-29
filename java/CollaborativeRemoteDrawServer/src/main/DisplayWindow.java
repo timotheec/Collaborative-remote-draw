@@ -45,7 +45,7 @@ public class DisplayWindow extends JFrame {
 
 	private void setupFileChooser() {
 		fileChooser = new JFileChooser();
-		fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+		//fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
 		fileChooser.setAcceptAllFileFilterUsed(false);
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Images (png, gif, jpg, bmp)", "png", "gif", "jpg",
 				"jpeg", "bmp");

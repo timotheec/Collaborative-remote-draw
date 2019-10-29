@@ -159,10 +159,14 @@ public class DrawViewModel {
     }
 
     public void endAction(){
-        strokeList.add(curStroke);
+        //strokeList.add(curStroke);
         dataSender.send(curStroke);
 
         performingAction = false;
+    }
+
+    public void addStroke(Stroke stroke){
+        strokeList.add(stroke);
     }
 
     public void zoom(){

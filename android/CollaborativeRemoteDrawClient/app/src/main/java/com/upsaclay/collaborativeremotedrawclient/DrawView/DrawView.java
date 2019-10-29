@@ -53,7 +53,7 @@ public class DrawView extends View implements DataListener {
                 //The user releases the screen, end the action
 
                 model.endAction();
-                this.invalidate();
+                //this.invalidate();
                 break;
         }
         return true;
@@ -79,11 +79,11 @@ public class DrawView extends View implements DataListener {
         view.draw(canvas);
     }
 
-    // stroke receive from the server
+    // stroke received from the server
     @Override
     public void onRecieveStroke(Stroke stroke) {
-        // TODO : use the stroke as you need (remove useless log bellow too)
-        Log.i("INFO", "stroke received");
+        model.addStroke(stroke);
+        this.invalidate();
     }
 
     public void zoom(){
