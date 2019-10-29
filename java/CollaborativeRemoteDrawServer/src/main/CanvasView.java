@@ -1,7 +1,9 @@
 package main;
 
+import java.awt.BasicStroke;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
 import shared.Stroke;
@@ -33,6 +35,10 @@ public class CanvasView {
 	}
 	
 	private void paintStrokes(Graphics2D g) {
+		RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g.setRenderingHints(rh);
+		g.setStroke(new BasicStroke(2));
+		
 		for(final Stroke stroke : controller.getStrokes())
 			stroke.paint(g);
 	}
