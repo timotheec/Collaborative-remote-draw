@@ -17,7 +17,6 @@ import shared.Stroke;
 public class ClientProcessor implements Runnable {
 
 	private Socket sock;
-	private PrintWriter writer = null;
 	private BufferedInputStream reader = null;
 	private DataListener dataListener;
 	private Gson gson = new Gson();
@@ -29,14 +28,11 @@ public class ClientProcessor implements Runnable {
 
 	@Override
 	public void run() {
-		System.err.println("Lancement du traitement de la connexion cliente");
-
 		boolean closeConnexion = false;
 
 		// While the connection is open we treat the demand
 		while (!sock.isClosed()) {
 			try {
-				writer = new PrintWriter(sock.getOutputStream());
 				reader = new BufferedInputStream(sock.getInputStream());
 
 				// We waiting for the client demand
@@ -58,6 +54,7 @@ public class ClientProcessor implements Runnable {
 				case "BACKGROUND":
 					NetworkHelper.sendImage(AppConfig.getInstance().getImage(), sock);
 					System.out.println("image sent");
+					closeConnexion = true;
 					break;
 				case "CLOSE":
 					toSend = "Cummunication closed";
@@ -69,17 +66,14 @@ public class ClientProcessor implements Runnable {
 					break;
 				}
 
-				writer.write(toSend);
-				writer.flush(); // Absolutly required for the client to receive the response
-
 				if (closeConnexion) {
 					System.err.println("CONNETION CLOSED DETECTED");
-					writer = null;
 					reader = null;
 					sock.close();
 					break;
 				}
 			} catch (SocketException e) {
+				e.printStackTrace(System.err);
 				System.err.println("CONNECTION INTERRUPTED");
 				break;
 			} catch (IOException e) {

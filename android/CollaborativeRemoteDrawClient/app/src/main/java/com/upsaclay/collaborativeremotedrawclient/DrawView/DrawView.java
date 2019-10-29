@@ -66,6 +66,7 @@ public class DrawView extends View implements DataListener {
         this.invalidate();
     }
 
+    // image receive from the server
     @Override
     public void onReceiveImage(Bitmap image) {
         model.setImage(image);
@@ -78,9 +79,11 @@ public class DrawView extends View implements DataListener {
         view.draw(canvas);
     }
 
-    // Useless
+    // stroke receive from the server
     @Override
     public void onRecieveStroke(Stroke stroke) {
+        // TODO : use the stroke as you need (remove useless log bellow too)
+        Log.i("INFO", "stroke received");
     }
 
     public void zoom(){

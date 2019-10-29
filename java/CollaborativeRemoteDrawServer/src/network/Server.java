@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import main.Canvas;
@@ -43,7 +44,7 @@ public class Server implements DataListener {
 					try {
 						// Waiting for a client connection
 						Socket client = server.accept();
-						clients.add(client); // TODO : remove when it is closed
+						clients.add(client);
 
 						// Process the requests in a separate thread
 						System.out.println("Connexion cliente reçue.");
@@ -72,13 +73,21 @@ public class Server implements DataListener {
 
 	@Override
 	public void onSendingStroke(Stroke stroke) {
-		System.out.println("ssss");
-		for(final Socket socket : clients)
+		removeClosedSocket();
+		for (final Socket socket : clients)
 			NetworkHelper.sendStroke(stroke, socket);
 	}
 
 	@Override
 	public void onRecieveStroke(Stroke stroke) {
 		canvas.addStroke(stroke);
+	}
+
+	private void removeClosedSocket() {
+		for (Iterator<Socket> iter = clients.listIterator(); iter.hasNext();) {
+			Socket sock = iter.next();
+			if (sock.isClosed())
+				iter.remove();
+		}
 	}
 }

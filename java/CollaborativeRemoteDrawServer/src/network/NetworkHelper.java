@@ -46,14 +46,15 @@ public class NetworkHelper {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				try (PrintWriter writer = new PrintWriter(socket.getOutputStream())) {
+				try {
+					PrintWriter writer = new PrintWriter(socket.getOutputStream());
 					writer.write(message);
 					writer.flush();
 				} catch (IOException e) {
 					e.printStackTrace(System.err);
 				}
 			}
-		});
+		}).start();
 	}
 	
 	// Send string trough network

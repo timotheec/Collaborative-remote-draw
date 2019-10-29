@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
@@ -113,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
         SocketClient sock = new SocketClient(ipAddr, portNum, drawView);
 
         drawView.setDataListener(sock);
-        sock.execute();
+        sock.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
