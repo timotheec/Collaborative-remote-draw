@@ -9,6 +9,7 @@ import com.upsaclay.collaborativeremotedrawclient.network.DataListener;
 import com.upsaclay.collaborativeremotedrawclient.network.DataSender;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class DrawViewModel {
     //size of the view
@@ -29,8 +30,12 @@ public class DrawViewModel {
     //screen scale
     private float scaleS;
 
+    public void setStrokeList(List<Stroke> strokeList) {
+        this.strokeList = strokeList;
+    }
+
     //used to store stroke data
-    private ArrayList<Stroke> strokeList;
+    private List<Stroke> strokeList;
     private Stroke curStroke;
     private boolean performingAction;
     private Point start, end;
@@ -75,7 +80,7 @@ public class DrawViewModel {
         return scaleS * scale;
     }
 
-    public ArrayList<Stroke> getStrokeList() {
+    public List<Stroke> getStrokeList() {
         return strokeList;
     }
 

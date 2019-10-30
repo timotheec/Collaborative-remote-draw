@@ -41,7 +41,7 @@ public class SocketClient extends AsyncTask<Void, String, Void> implements DataL
             if (socket == null || isCancelled() || socket.isClosed())
                 break;
             try {
-                String response = read();
+                String response = NetworkHelper.readMessage(reader);
                 publishProgress(response);
             } catch (Exception e) {
                 Log.i("INFO", "Connection closed");
@@ -66,16 +66,6 @@ public class SocketClient extends AsyncTask<Void, String, Void> implements DataL
             } catch (IOException e) {
                 Log.e("ERROR", "Socket could not close.");
             }
-    }
-
-    // Read answer from the server
-    private String read() throws IOException {
-        String response;
-        int size = reader.readInt();
-        byte[] b = new byte[size];
-        reader.readFully(b);
-        response = new String(b, 0, size);
-        return response;
     }
 
     @Override

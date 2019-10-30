@@ -48,7 +48,7 @@ public class Server implements DataListener {
 
 						// Process the requests in a separate thread
 						System.out.println("Connexion cliente reçue.");
-						Thread t = new Thread(new ClientProcessor(client, Server.this));
+						Thread t = new Thread(new ClientProcessor(client, canvas, Server.this));
 						t.start();
 
 					} catch (IOException e) {

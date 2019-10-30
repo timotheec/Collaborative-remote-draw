@@ -3,10 +3,17 @@ package com.upsaclay.collaborativeremotedrawclient.network;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.upsaclay.collaborativeremotedrawclient.Shared.Stroke;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class NetworkHelper {
 
@@ -26,6 +33,29 @@ public class NetworkHelper {
         }
 
         return image;
+    }
+
+    // Read answer from the server
+    public static String readMessage(DataInputStream reader) throws IOException {
+        String response;
+        int size = reader.readInt();
+        byte[] b = new byte[size];
+        reader.readFully(b);
+        response = new String(b, 0, size);
+        return response;
+    }
+
+    public static List<Stroke> receiveStrokes(Socket socket) {
+        List<Stroke> strokes = new ArrayList<>();
+        Gson gson = new Gson();
+        try {
+            Type strokeListType = new TypeToken<ArrayList<Stroke>>(){}.getType();
+            DataInputStream reader = new DataInputStream(socket.getInputStream());
+            strokes = gson.fromJson(readMessage(reader), strokeListType);
+        } catch (IOException e) {
+            e.printStackTrace(System.err);
+        }
+        return strokes;
     }
 
     public static void sendMessage(final String message, final DataOutputStream out) {

@@ -2,7 +2,6 @@ package network;
 
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
@@ -10,20 +9,23 @@ import java.net.SocketException;
 import com.google.gson.Gson;
 
 import main.AppConfig;
+import main.Canvas;
 import shared.Stroke;
 
 // Source : https://openclassrooms.com/fr/courses/2654601-java-et-la-programmation-reseau/2668874-les-sockets-cote-serveur
 // Note : code is inspire from an openclassrooms solutions but completly adpated to our needs.
 public class ClientProcessor implements Runnable {
 
-	private Socket sock;
+	private Socket socket;
 	private DataInputStream reader = null;
 	private DataListener dataListener;
 	private Gson gson = new Gson();
+	private Canvas canvas;
 
-	public ClientProcessor(Socket pSock, DataListener dataListener) {
-		sock = pSock;
+	public ClientProcessor(Socket pSock, Canvas canvas, DataListener dataListener) {
+		socket = pSock;
 		this.dataListener = dataListener;
+		this.canvas = canvas;
 	}
 
 	@Override
@@ -31,15 +33,15 @@ public class ClientProcessor implements Runnable {
 		boolean closeConnexion = false;
 
 		// While the connection is open we treat the demand
-		while (!sock.isClosed()) {
+		while (!socket.isClosed()) {
 			try {
-				reader = new DataInputStream(sock.getInputStream());
+				reader = new DataInputStream(socket.getInputStream());
 
 				// We waiting for the client demand
 				String response = read();
 
 				// We print some information for debugging purpose
-				InetSocketAddress remote = (InetSocketAddress) sock.getRemoteSocketAddress();
+				InetSocketAddress remote = (InetSocketAddress) socket.getRemoteSocketAddress();
 				String debug = "";
 				debug = "Thread : " + Thread.currentThread().getName() + ". ";
 				debug += "Asking for host adress : " + remote.getAddress().getHostAddress() + ".";
@@ -49,8 +51,13 @@ public class ClientProcessor implements Runnable {
 
 				switch (response.toUpperCase()) {
 				case "BACKGROUND":
-					NetworkHelper.sendImage(AppConfig.getInstance().getImage(), sock);
+					NetworkHelper.sendImage(AppConfig.getInstance().getImage(), socket);
 					System.out.println("image sent");
+					closeConnexion = true;
+					break;
+				case "ALL_STROKES":
+					System.out.println(gson.toJson(canvas.getStrokes()));
+					NetworkHelper.sendStrokes(canvas.getStrokes(), socket);
 					closeConnexion = true;
 					break;
 				case "CLOSE":
@@ -64,7 +71,7 @@ public class ClientProcessor implements Runnable {
 				if (closeConnexion) {
 					System.err.println("CONNETION CLOSED DETECTED");
 					reader = null;
-					sock.close();
+					socket.close();
 					break;
 				}
 			} catch (SocketException e) {
@@ -73,6 +80,8 @@ public class ClientProcessor implements Runnable {
 				break;
 			} catch (IOException e) {
 				e.printStackTrace();
+				System.err.println("CONNECTION INTERRUPTED");
+				break;
 			}
 		}
 	}

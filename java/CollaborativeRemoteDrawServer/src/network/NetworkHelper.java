@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.List;
 
 import com.google.gson.Gson;
 
@@ -40,31 +41,33 @@ public class NetworkHelper {
 			e.printStackTrace(System.err);
 		}
 	}
-	
+
 	// Send already existing stroke trough network
-	public static void sendStrokes(BufferedImage image, final Socket socket) {
+	public static void sendStrokes(List<Stroke> strokes, final Socket socket) {
+		sendData(new Gson().toJson(strokes), socket);
 	}
 
 	// Send string trough network
-	public static void sendData(final String message, final Socket socket) {		
+	private static void sendData(final String message, final Socket socket) {
+		try {
+			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+			out.writeInt(message.length());
+			out.writeBytes(message);
+			out.flush();
+		} catch (IOException e) {
+			e.printStackTrace(System.err);
+		}
+
+	}
+
+	// Send string trough network
+	public static void sendStroke(final Stroke stroke, final Socket socket) {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				try {
-					DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-					out.writeInt(message.length());
-					out.writeBytes(message);
-					out.flush();
-				} catch (IOException e) {
-					e.printStackTrace(System.err);
-				}
+				sendData(new Gson().toJson(stroke), socket);
 			}
 		}).start();
-	}
-	
-	// Send string trough network
-	public static void sendStroke(final Stroke stroke, final Socket socket) {
-		sendData(new Gson().toJson(stroke), socket);
 	}
 
 }

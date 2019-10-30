@@ -3,17 +3,16 @@ package com.upsaclay.collaborativeremotedrawclient.DrawView;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Point;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.upsaclay.collaborativeremotedrawclient.AppConfig;
 import com.upsaclay.collaborativeremotedrawclient.Shared.Stroke;
 import com.upsaclay.collaborativeremotedrawclient.network.DataListener;
+import com.upsaclay.collaborativeremotedrawclient.network.DownloadStrokes;
 
-import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 public class DrawView extends View implements DataListener {
 
@@ -25,6 +24,16 @@ public class DrawView extends View implements DataListener {
         super(context, attrSet);
         model = new DrawViewModel();
         view = new DrawViewView(this);
+
+        try {
+            String ipAddr = AppConfig.getInstance().getServerIp();
+            int portNum = AppConfig.getInstance().getServerPort();
+            model.setStrokeList(new DownloadStrokes(ipAddr, portNum).execute().get());
+        } catch (ExecutionException e) {
+            e.printStackTrace(System.err);
+        } catch (InterruptedException e) {
+            e.printStackTrace(System.err);
+        }
     }
 
     public DrawViewModel getModel() {
