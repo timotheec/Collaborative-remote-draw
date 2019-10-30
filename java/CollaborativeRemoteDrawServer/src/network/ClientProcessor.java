@@ -1,6 +1,6 @@
 package network;
 
-import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
@@ -17,7 +17,7 @@ import shared.Stroke;
 public class ClientProcessor implements Runnable {
 
 	private Socket sock;
-	private BufferedInputStream reader = null;
+	private DataInputStream reader = null;
 	private DataListener dataListener;
 	private Gson gson = new Gson();
 
@@ -33,22 +33,19 @@ public class ClientProcessor implements Runnable {
 		// While the connection is open we treat the demand
 		while (!sock.isClosed()) {
 			try {
-				reader = new BufferedInputStream(sock.getInputStream());
+				reader = new DataInputStream(sock.getInputStream());
 
 				// We waiting for the client demand
 				String response = read();
-				InetSocketAddress remote = (InetSocketAddress) sock.getRemoteSocketAddress();
 
 				// We print some information for debugging purpose
+				InetSocketAddress remote = (InetSocketAddress) sock.getRemoteSocketAddress();
 				String debug = "";
 				debug = "Thread : " + Thread.currentThread().getName() + ". ";
 				debug += "Asking for host adress : " + remote.getAddress().getHostAddress() + ".";
 				debug += " on port : " + remote.getPort() + ".\n";
 				debug += "\t -> Command received : " + response + "\n";
 //				System.out.println("\n" + debug);
-
-				// We treat the demand correctly
-				String toSend = "";
 
 				switch (response.toUpperCase()) {
 				case "BACKGROUND":
@@ -57,12 +54,10 @@ public class ClientProcessor implements Runnable {
 					closeConnexion = true;
 					break;
 				case "CLOSE":
-					toSend = "Cummunication closed";
 					closeConnexion = true;
 					break;
 				default:
 					publishStroke(gson.fromJson(response, Stroke.class));
-					toSend = "Unknwon command";
 					break;
 				}
 
@@ -81,19 +76,17 @@ public class ClientProcessor implements Runnable {
 			}
 		}
 	}
-	
+
 	private void publishStroke(Stroke stroke) {
 		dataListener.onRecieveStroke(stroke);
 	}
-	
+
 	// Read the response from the client
 	private String read() throws IOException {
-		String response = "";
-		int stream;
-		byte[] b = new byte[4096];
-		stream = reader.read(b);
-		response = new String(b, 0, stream);
-		return response;
+		int size = reader.readInt(); // TODO : create a bug when a client log out ?
+		byte[] b = new byte[size];
+		reader.readFully(b);
+		return new String(b, 0, size);
 	}
 
 }

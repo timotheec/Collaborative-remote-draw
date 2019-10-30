@@ -40,6 +40,10 @@ public class NetworkHelper {
 			e.printStackTrace(System.err);
 		}
 	}
+	
+	// Send already existing stroke trough network
+	public static void sendStrokes(BufferedImage image, final Socket socket) {
+	}
 
 	// Send string trough network
 	public static void sendData(final String message, final Socket socket) {		
@@ -47,9 +51,10 @@ public class NetworkHelper {
 			@Override
 			public void run() {
 				try {
-					PrintWriter writer = new PrintWriter(socket.getOutputStream());
-					writer.write(message);
-					writer.flush();
+					DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+					out.writeInt(message.length());
+					out.writeBytes(message);
+					out.flush();
 				} catch (IOException e) {
 					e.printStackTrace(System.err);
 				}

@@ -7,15 +7,15 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.upsaclay.collaborativeremotedrawclient.Shared.Stroke;
 
-import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.DataOutputStream;
 import java.net.Socket;
 
 public class SocketClient extends AsyncTask<Void, String, Void> implements DataListener {
     private Socket socket = null;
-    private PrintWriter writer = null;
-    private BufferedInputStream reader = null;
+    private DataOutputStream writer = null;
+    private DataInputStream reader = null;
     private String host;
     private int port;
     private DataListener dataListener;
@@ -31,8 +31,8 @@ public class SocketClient extends AsyncTask<Void, String, Void> implements DataL
     protected Void doInBackground(Void... arg0) {
         try {
             socket = new Socket(host, port);
-            writer = new PrintWriter(socket.getOutputStream(), true);
-            reader = new BufferedInputStream(socket.getInputStream());
+            writer = new DataOutputStream(socket.getOutputStream());
+            reader = new DataInputStream(socket.getInputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -55,10 +55,8 @@ public class SocketClient extends AsyncTask<Void, String, Void> implements DataL
 
     @Override
     protected void onProgressUpdate(String... messages) {
-        for (String message : messages) {
-            Log.i("INFO", "Stroke received on socket");
+        for (String message : messages)
             dataListener.onRecieveStroke(gson.fromJson(message, Stroke.class));
-        }
     }
 
     private void closeSocket() {
@@ -72,11 +70,11 @@ public class SocketClient extends AsyncTask<Void, String, Void> implements DataL
 
     // Read answer from the server
     private String read() throws IOException {
-        String response = "";
-        int stream;
-        byte[] b = new byte[4096];
-        stream = reader.read(b);
-        response = new String(b, 0, stream);
+        String response;
+        int size = reader.readInt();
+        byte[] b = new byte[size];
+        reader.readFully(b);
+        response = new String(b, 0, size);
         return response;
     }
 
@@ -86,7 +84,6 @@ public class SocketClient extends AsyncTask<Void, String, Void> implements DataL
 
     @Override
     public void onRecieveStroke(Stroke stroke) {
-        writer.write(gson.toJson(stroke));
-        writer.flush();
+        NetworkHelper.sendMessage(gson.toJson(stroke), writer);
     }
 }

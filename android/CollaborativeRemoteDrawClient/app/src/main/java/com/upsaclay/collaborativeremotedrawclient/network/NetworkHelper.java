@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.util.Log;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
@@ -25,6 +26,16 @@ public class NetworkHelper {
         }
 
         return image;
+    }
+
+    public static void sendMessage(final String message, final DataOutputStream out) {
+        try {
+            out.writeInt(message.length());
+            out.writeBytes(message);
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace(System.err);
+        }
     }
 
     // Convert a BufferedImage from java to an android Bitmap

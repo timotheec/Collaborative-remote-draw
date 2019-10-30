@@ -3,8 +3,8 @@ package com.upsaclay.collaborativeremotedrawclient.network;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.Socket;
 
 public class DownloadBackground extends AsyncTask<Void, Void, Bitmap> {
@@ -27,9 +27,8 @@ public class DownloadBackground extends AsyncTask<Void, Void, Bitmap> {
 
         try (Socket socket = new Socket(host, port)) {
             // Ask the background to the server
-            PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
-            writer.write(command);
-            writer.flush();
+            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+            NetworkHelper.sendMessage(command, out);
 
             // Waiting for the server answer
             image = NetworkHelper.receiveImage(socket);
