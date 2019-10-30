@@ -11,14 +11,11 @@ public class DownloadBackground extends AsyncTask<Void, Void, Bitmap> {
 
     private String host;
     private int port;
-    private DataListener dataListener;
-
     private static final String command = "BACKGROUND";
 
-    public DownloadBackground(String serverIp, int serverPort, DataListener dataListener) {
+    public DownloadBackground(String serverIp, int serverPort) {
         this.host = serverIp;
         this.port = serverPort;
-        this.dataListener = dataListener;
     }
 
     @Override
@@ -37,11 +34,5 @@ public class DownloadBackground extends AsyncTask<Void, Void, Bitmap> {
         }
 
         return image;
-    }
-
-    @Override
-    protected void onPostExecute(Bitmap image) {
-        if (dataListener != null)
-            dataListener.onReceiveImage(image);
     }
 }

@@ -1,7 +1,6 @@
 package com.upsaclay.collaborativeremotedrawclient.DrawView;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -10,6 +9,7 @@ import android.view.View;
 import com.upsaclay.collaborativeremotedrawclient.AppConfig;
 import com.upsaclay.collaborativeremotedrawclient.Shared.Stroke;
 import com.upsaclay.collaborativeremotedrawclient.network.DataListener;
+import com.upsaclay.collaborativeremotedrawclient.network.DownloadBackground;
 import com.upsaclay.collaborativeremotedrawclient.network.DownloadStrokes;
 
 import java.util.concurrent.ExecutionException;
@@ -29,6 +29,7 @@ public class DrawView extends View implements DataListener {
             String ipAddr = AppConfig.getInstance().getServerIp();
             int portNum = AppConfig.getInstance().getServerPort();
             model.setStrokeList(new DownloadStrokes(ipAddr, portNum).execute().get());
+            model.setImage(new DownloadBackground(ipAddr, portNum).execute().get());
         } catch (ExecutionException e) {
             e.printStackTrace(System.err);
         } catch (InterruptedException e) {
@@ -72,13 +73,6 @@ public class DrawView extends View implements DataListener {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         model.setViewSize(w, h);
-        this.invalidate();
-    }
-
-    // image receive from the server
-    @Override
-    public void onReceiveImage(Bitmap image) {
-        model.setImage(image);
         this.invalidate();
     }
 

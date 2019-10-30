@@ -12,7 +12,6 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.upsaclay.collaborativeremotedrawclient.DrawView.DrawView;
-import com.upsaclay.collaborativeremotedrawclient.network.DownloadBackground;
 import com.upsaclay.collaborativeremotedrawclient.network.SocketClient;
 
 /**
@@ -110,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
         String ipAddr = AppConfig.getInstance().getServerIp();
         int portNum = AppConfig.getInstance().getServerPort();
 
-        new DownloadBackground(ipAddr, portNum, drawView).execute();
         SocketClient sock = new SocketClient(ipAddr, portNum, drawView);
 
         drawView.setDataListener(sock);

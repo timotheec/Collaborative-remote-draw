@@ -1,6 +1,5 @@
 package com.upsaclay.collaborativeremotedrawclient.network;
 
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -66,10 +65,6 @@ public class SocketClient extends AsyncTask<Void, String, Void> implements DataL
             } catch (IOException e) {
                 Log.e("ERROR", "Socket could not close.");
             }
-    }
-
-    @Override
-    public void onReceiveImage(Bitmap image) {
     }
 
     @Override
