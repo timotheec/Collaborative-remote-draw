@@ -21,6 +21,8 @@ public class DrawViewModel {
     //used to store image data
     private Bitmap image;
     private boolean imageSet;
+
+    //display properties
     //image offset (distance from top left corner of the image)
     private int oxI, oyI;
     //image scale
@@ -30,15 +32,22 @@ public class DrawViewModel {
     //screen scale
     private float scaleS;
 
-    public void setStrokeList(List<Stroke> strokeList) {
-        this.strokeList = strokeList;
-    }
+    //touchscreen mode (0 = zoom, 1 = draw)
+    private int touchMode;
+
+    //used to handle zooming
+    //previous position of first finger
+    private Point previousPos1;
+    //previous position of second finger
+    private Point previousPos2;
 
     //used to store stroke data
     private List<Stroke> strokeList;
     private Stroke curStroke;
     private boolean performingAction;
     private Point start, end;
+
+    //used to handle zooming
 
     public DrawViewModel(){
         vw = 1;
@@ -55,6 +64,7 @@ public class DrawViewModel {
         oyS = 0;
         scaleS = 1;
 
+        touchMode = 0;
 
         strokeList = new ArrayList<>();
         curStroke = new Stroke();
@@ -92,12 +102,8 @@ public class DrawViewModel {
         return performingAction;
     }
 
-    public void  setViewSize(int vw, int vh){
-        this.vw = vw;
-        this.vh = vh;
-
-        //resets image position for new display
-        if(imageIsSet()) centerImage();
+    public void setStrokeList(List<Stroke> strokeList) {
+        this.strokeList = strokeList;
     }
 
     public void setImage(Bitmap image){
@@ -108,6 +114,14 @@ public class DrawViewModel {
         centerImage();
 
         imageSet = true;
+    }
+
+    public void  setViewSize(int vw, int vh){
+        this.vw = vw;
+        this.vh = vh;
+
+        //resets image position for new display
+        if(imageIsSet()) centerImage();
     }
 
     //adjusts the scale and position of the image to center it on the screen
@@ -168,6 +182,18 @@ public class DrawViewModel {
         dataSender.send(curStroke);
 
         performingAction = false;
+    }
+
+    public void addSecondPointer(float x, float y){
+
+    }
+
+    public void moveSecondPointer(float x, float y){
+
+    }
+
+    public void removeSecondPointer(float x, float y){
+
     }
 
     public void addStroke(Stroke stroke){

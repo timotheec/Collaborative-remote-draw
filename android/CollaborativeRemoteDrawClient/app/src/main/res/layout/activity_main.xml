@@ -39,7 +39,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:onClick="centerImage"
-                android:text="@string/center_image" />
+                android:text="@string/center" />
 
             <Button
                 android:id="@+id/zoom_button"
@@ -47,7 +47,21 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:onClick="zoom"
-                android:text="@string/send_zoom" />
+                android:text="@string/zoom" />
+
+            <Button
+                android:id="@+id/draw_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/draw" />
+
+            <Button
+                android:id="@+id/display_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/display" />
 
         </LinearLayout>
     </FrameLayout>

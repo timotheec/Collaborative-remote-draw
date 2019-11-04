@@ -20,6 +20,11 @@ public class DrawView extends View implements DataListener {
 
     private DrawViewView view;
 
+    //used to track the main pointer in a touch event
+    private int mainPointerID;
+    //used to track the second pointer in a touch event
+    private int secondPointerID;
+
     public DrawView(Context context, AttributeSet attrSet) {
         super(context, attrSet);
         model = new DrawViewModel();
@@ -50,13 +55,18 @@ public class DrawView extends View implements DataListener {
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 //The user touches the screen, starts a new action
-
                 model.beginAction(e.getX(), e.getY());
+                this.mainPointerID = e.getPointerId(e.getActionIndex());
                 break;
             case MotionEvent.ACTION_MOVE:
-                //The user moves their finger, continue the action
-
-                model.continueAction(e.getX(), e.getY());
+                //The user moves a finger, continue the action
+                int eventPointerID = e.getPointerId(e.getActionIndex());
+                if(eventPointerID == this.mainPointerID){
+                    model.continueAction(e.getX(), e.getY());
+                }
+                if(eventPointerID == this.secondPointerID){
+                    model.moveSecondPointer(e.getX(), e.getY());
+                }
                 this.invalidate();
                 break;
             case MotionEvent.ACTION_UP:
@@ -64,6 +74,15 @@ public class DrawView extends View implements DataListener {
 
                 model.endAction();
                 //this.invalidate();
+                break;
+            case MotionEvent.ACTION_POINTER_DOWN:
+                //The user presses a second finger
+                model.addSecondPointer(e.getX(), e.getY());
+                this.secondPointerID = e.getPointerId(e.getActionIndex());
+                break;
+            case MotionEvent.ACTION_POINTER_UP:
+                //The user releases the second finger
+                model.removeSecondPointer(e.getX(), e.getY());
                 break;
         }
         return true;

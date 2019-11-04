@@ -7,6 +7,8 @@
 
     <string name="title_activity_main">MainActivity</string>
     <string name="toolbar">(Insert toolbar here)</string>
-    <string name="send_zoom">Zoom X2</string>
-    <string name="center_image">Center image</string>
+    <string name="zoom">Zoom</string>
+    <string name="center">Center</string>
+    <string name="draw">Draw</string>
+    <string name="display">Display</string>
 </resources>
