@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.upsaclay.collaborativeremotedrawclient.Shared.Point;
 import com.upsaclay.collaborativeremotedrawclient.Shared.Stroke;
+import com.upsaclay.collaborativeremotedrawclient.Shared.Zoom;
 import com.upsaclay.collaborativeremotedrawclient.network.DataListener;
 import com.upsaclay.collaborativeremotedrawclient.network.DataSender;
 
@@ -172,7 +173,8 @@ public class DrawViewModel {
     }
 
     public void sendDisplay(){
-        Log.i("DIDPLAY","scale: " + scale + " offset: " + oxI + " " + oyI);
+        Zoom imageZoom = new Zoom(scale, oxI, oyI);
+        Log.i("DIDPLAY","scale: " + imageZoom.scale + " offset: " + imageZoom.xOffset + " " + imageZoom.yOffset);
     }
 
     public void beginAction(float x, float y){
