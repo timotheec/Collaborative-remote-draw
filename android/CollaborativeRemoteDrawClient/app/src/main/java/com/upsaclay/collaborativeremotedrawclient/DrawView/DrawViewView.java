@@ -3,6 +3,7 @@ package com.upsaclay.collaborativeremotedrawclient.DrawView;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 
 import com.upsaclay.collaborativeremotedrawclient.Shared.Stroke;
@@ -23,14 +24,16 @@ public class DrawViewView {
         //draw image
         if (model.imageIsSet()){
             Bitmap image = model.getImage();
-            Bitmap scaledImage = Bitmap.createScaledBitmap(image, (int)(image.getWidth()*model.getScale()), (int)(image.getHeight()*model.getScale()), true);
-            canvas.drawBitmap(scaledImage, model.getOx(), model.getOy(), paint);
+            Matrix m = new Matrix();
+            m.setScale(model.getScale(), model.getScale());
+            m.postTranslate(model.getOx(),model.getOy());
+            canvas.drawBitmap(image, m, paint);
         }
         paint.setStrokeWidth(10);
         float startX = 0;
         float startY = 0;
-        float endX = 0;
-        float endY = 0;
+        float endX;
+        float endY;
 
         //draw previous strokes
         paint.setColor(Color.BLACK);

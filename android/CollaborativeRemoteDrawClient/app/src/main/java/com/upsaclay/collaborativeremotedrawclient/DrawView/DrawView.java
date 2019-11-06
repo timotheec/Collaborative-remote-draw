@@ -30,6 +30,9 @@ public class DrawView extends View implements DataListener {
         model = new DrawViewModel();
         view = new DrawViewView(this);
 
+        mainPointerID = -1;
+        secondPointerID = -1;
+
         try {
             String ipAddr = AppConfig.getInstance().getServerIp();
             int portNum = AppConfig.getInstance().getServerPort();
@@ -52,7 +55,7 @@ public class DrawView extends View implements DataListener {
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
-        switch (e.getAction()) {
+        switch (e.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
                 //The user touches the screen, starts a new action
                 model.beginAction(e.getX(), e.getY());
@@ -60,29 +63,38 @@ public class DrawView extends View implements DataListener {
                 break;
             case MotionEvent.ACTION_MOVE:
                 //The user moves a finger, continue the action
-                int eventPointerID = e.getPointerId(e.getActionIndex());
-                if(eventPointerID == this.mainPointerID){
+                if(e.getPointerId(e.getActionIndex()) == this.mainPointerID){
                     model.continueAction(e.getX(), e.getY());
                 }
-                if(eventPointerID == this.secondPointerID){
-                    model.moveSecondPointer(e.getX(), e.getY());
+                int secondPointerIndex = e.findPointerIndex(this.secondPointerID);
+                if(secondPointerIndex != -1){
+                    model.moveSecondPointer(e.getX(secondPointerIndex), e.getY(secondPointerIndex));
                 }
                 this.invalidate();
                 break;
             case MotionEvent.ACTION_UP:
                 //The user releases the screen, end the action
-
                 model.endAction();
-                //this.invalidate();
+                this.mainPointerID = -1;
+                this.secondPointerID = -1;
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
                 //The user presses a second finger
-                model.addSecondPointer(e.getX(), e.getY());
-                this.secondPointerID = e.getPointerId(e.getActionIndex());
+                if(secondPointerID == -1) {
+                    model.addSecondPointer(e.getX(e.getActionIndex()), e.getY(e.getActionIndex()));
+                    this.secondPointerID = e.getPointerId(e.getActionIndex());
+                }
                 break;
             case MotionEvent.ACTION_POINTER_UP:
-                //The user releases the second finger
-                model.removeSecondPointer(e.getX(), e.getY());
+                //The user releases one of the two fingers
+                if(e.getPointerId(e.getActionIndex()) == this.mainPointerID) {
+                    model.endAction();
+                    model.beginAction(e.getX(), e.getY());
+                }
+                if(e.getPointerId(e.getActionIndex()) == this.secondPointerID) {
+                    model.removeSecondPointer();
+                    this.secondPointerID = -1;
+                }
                 break;
         }
         return true;
@@ -109,12 +121,18 @@ public class DrawView extends View implements DataListener {
     }
 
     public void zoom(){
-        model.zoom();
-        this.invalidate();
+        model.setTouchMode(0);
     }
 
+    public void draw(){
+        model.setTouchMode(1);
+    }
     public void centerImage(){
         model.centerImage();
         this.invalidate();
+    }
+
+    public void sendDisplay(){
+        model.sendDisplay();
     }
 }

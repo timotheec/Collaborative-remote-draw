@@ -9,4 +9,9 @@ public class Point {
         this.y = y;
     }
 
+    //calculates the distance between this point and the other
+    public float distance(Point p){
+        float dist = (float) Math.sqrt((this.x - p.x)*(this.x - p.x) + (this.y - p.y)*(this.y - p.y));
+        return dist;
+    }
 }

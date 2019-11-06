@@ -40,6 +40,8 @@ public class DrawViewModel {
     private Point previousPos1;
     //previous position of second finger
     private Point previousPos2;
+    //true if more than one finger is on the screen
+    private boolean multitouch;
 
     //used to store stroke data
     private List<Stroke> strokeList;
@@ -65,6 +67,9 @@ public class DrawViewModel {
         scaleS = 1;
 
         touchMode = 0;
+
+        previousPos1 = new Point(0, 0);
+        previousPos2 = new Point(0, 0);
 
         strokeList = new ArrayList<>();
         curStroke = new Stroke();
@@ -162,48 +167,89 @@ public class DrawViewModel {
         return y*getScale() + getOy();
     }
 
+    public void setTouchMode(int touchMode) {
+        this.touchMode = touchMode;
+    }
+
+    public void sendDisplay(){
+        Log.i("DIDPLAY","scale: " + scale + " offset: " + oxI + " " + oyI);
+    }
+
     public void beginAction(float x, float y){
-        start = new Point(screenToImageX(x), screenToImageY(y));
+        switch (this.touchMode){
+            case 0:
+                this.previousPos1 = new Point(x, y);
+                break;
+            case 1:
+                start = new Point(screenToImageX(x), screenToImageY(y));
+                break;
+        }
     }
 
     public void continueAction(float x, float y){
-        if(!performingAction){
-            curStroke = new Stroke();
-            performingAction = true;
+        switch(this.touchMode) {
+            case 0:
+                oxI += (x - previousPos1.x)/scaleS;
+                oyI += (y - previousPos1.y)/scaleS;
+                Point newPos = new Point(x, y);
+                if(multitouch){
+                    zoom(newPos.distance(previousPos2)/previousPos1.distance(previousPos2));
+                }
+                previousPos1 = newPos;
+                break;
+            case 1:
+                if (!performingAction) {
+                    curStroke = new Stroke();
+                    performingAction = true;
+                }
+                end = new Point(screenToImageX(x), screenToImageY(y));
+                curStroke.add(start);
+                curStroke.add(end);
+                start = end;
+                break;
         }
-        end = new Point(screenToImageX(x), screenToImageY(y));
-        curStroke.add(start);
-        curStroke.add(end);
-        start = end;
     }
 
     public void endAction(){
-        //strokeList.add(curStroke);
-        dataSender.send(curStroke);
-
-        performingAction = false;
+        if(touchMode == 1) {
+            dataSender.send(curStroke);
+            performingAction = false;
+        }
+        multitouch = false;
     }
 
     public void addSecondPointer(float x, float y){
-
+        if(touchMode == 0) {
+            previousPos2 = new Point(x, y);
+            multitouch = true;
+        }
     }
 
     public void moveSecondPointer(float x, float y){
-
+        if(touchMode == 0) {
+            Point newPos = new Point(x, y);
+            zoom(previousPos1.distance(newPos)/previousPos1.distance(previousPos2));
+            previousPos2 = newPos;
+        }
     }
 
-    public void removeSecondPointer(float x, float y){
+    public void removeSecondPointer(){
+        this.multitouch = false;
+    }
 
+    public void zoom(float ratio){
+        float newScale = scale * ratio;
+        scale = newScale;
+
+        /*
+        scale = 2;
+        oxI = -image.getWidth()/2;
+        oyI = -image.getHeight()/2;
+        */
     }
 
     public void addStroke(Stroke stroke){
         strokeList.add(stroke);
-    }
-
-    public void zoom(){
-        scale = 2;
-        oxI = -image.getWidth()/2;
-        oyI = -image.getHeight()/2;
     }
 
 

@@ -192,4 +192,12 @@ public class MainActivity extends AppCompatActivity {
     public void zoom(View view){
         drawView.zoom();
     }
+
+    public void draw(View view){
+        drawView.draw();
+    }
+
+    public void display(View view){
+        drawView.sendDisplay();
+    }
 }

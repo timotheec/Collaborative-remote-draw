@@ -35,6 +35,7 @@
 
             <Button
                 android:id="@+id/center_button"
+                style="@style/Widget.AppCompat.Button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -43,6 +44,7 @@
 
             <Button
                 android:id="@+id/zoom_button"
+                style="@style/Widget.AppCompat.Button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -51,16 +53,20 @@
 
             <Button
                 android:id="@+id/draw_button"
+                style="@style/Widget.AppCompat.Button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:onClick="draw"
                 android:text="@string/draw" />
 
             <Button
                 android:id="@+id/display_button"
+                style="@style/Widget.AppCompat.Button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:onClick="display"
                 android:text="@string/display" />
 
         </LinearLayout>
