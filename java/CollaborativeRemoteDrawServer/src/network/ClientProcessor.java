@@ -11,6 +11,7 @@ import com.google.gson.Gson;
 import main.AppConfig;
 import main.Canvas;
 import shared.Stroke;
+import shared.Zoom;
 
 // Source : https://openclassrooms.com/fr/courses/2654601-java-et-la-programmation-reseau/2668874-les-sockets-cote-serveur
 // Note : code is inspire from an openclassrooms solutions but completly adpated to our needs.
@@ -64,7 +65,15 @@ public class ClientProcessor implements Runnable {
 					closeConnexion = true;
 					break;
 				default:
-					publishStroke(gson.fromJson(response, Stroke.class));
+					try {
+						if (response.startsWith("{\"scale\"")) {
+							canvas.setZoom(gson.fromJson(response, Zoom.class));
+						} else {
+							publishStroke(gson.fromJson(response, Stroke.class));
+						}
+					} catch (Exception e) {
+						e.printStackTrace(System.err);
+					}
 					break;
 				}
 

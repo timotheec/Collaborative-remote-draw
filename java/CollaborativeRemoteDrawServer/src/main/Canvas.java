@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 
 import network.DataListener;
 import shared.Stroke;
+import shared.Zoom;
 
 public class Canvas extends JPanel {
 
@@ -59,6 +60,14 @@ public class Canvas extends JPanel {
 
 	public void setDatalistener(DataListener dataListener) {
 		this.dataListener = dataListener;
+	}
+
+	public void setZoom(Zoom zoom) {
+		model.setZoom(zoom);
+	}
+
+	public Zoom getZoom() {
+		return model.getZoom();
 	}
 
 }

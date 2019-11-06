@@ -166,8 +166,8 @@ public class DrawViewModel {
     }
 
     public void sendDisplay(){
-        //imageZoom = new Zoom(scale, oxI, oyI);
-        Log.i("DIDPLAY","scale: " + imageZoom.scale + " offset: " + imageZoom.xOffset + " " + imageZoom.yOffset);
+        Zoom imageZoom = new Zoom(scale, oxI, oyI);
+        dataSender.send(imageZoom);
     }
 
     public void beginAction(float x, float y){

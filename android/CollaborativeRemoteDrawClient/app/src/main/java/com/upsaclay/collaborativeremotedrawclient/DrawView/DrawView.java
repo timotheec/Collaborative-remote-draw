@@ -8,6 +8,7 @@ import android.view.View;
 
 import com.upsaclay.collaborativeremotedrawclient.AppConfig;
 import com.upsaclay.collaborativeremotedrawclient.Shared.Stroke;
+import com.upsaclay.collaborativeremotedrawclient.Shared.Zoom;
 import com.upsaclay.collaborativeremotedrawclient.network.DataListener;
 import com.upsaclay.collaborativeremotedrawclient.network.DownloadBackground;
 import com.upsaclay.collaborativeremotedrawclient.network.DownloadStrokes;
@@ -119,6 +120,10 @@ public class DrawView extends View implements DataListener {
         model.addStroke(stroke);
         this.invalidate();
     }
+
+    // useless here but required by implementing interface
+    @Override
+    public void onSendZoom(Zoom zoom) { }
 
     public void zoom(){
         model.setTouchMode(0);

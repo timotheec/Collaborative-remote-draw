@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.upsaclay.collaborativeremotedrawclient.Shared.Stroke;
+import com.upsaclay.collaborativeremotedrawclient.Shared.Zoom;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -70,5 +71,10 @@ public class SocketClient extends AsyncTask<Void, String, Void> implements DataL
     @Override
     public void onRecieveStroke(Stroke stroke) {
         NetworkHelper.sendMessage(gson.toJson(stroke), writer);
+    }
+
+    @Override
+    public void onSendZoom(Zoom zoom) {
+        NetworkHelper.sendMessage(gson.toJson(zoom), writer);
     }
 }
