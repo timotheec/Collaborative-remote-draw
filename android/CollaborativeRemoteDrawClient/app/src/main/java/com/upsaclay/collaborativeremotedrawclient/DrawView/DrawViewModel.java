@@ -24,14 +24,10 @@ public class DrawViewModel {
     private boolean imageSet;
 
     //display properties
-    //image offset (distance from top left corner of the image)
-    private int oxI, oyI;
-    //image scale
-    private float scale;
-    //screen offset (distance from top left corner of the display)
-    private int oxS, oyS;
-    //screen scale
-    private float scaleS;
+    //Zoom set by the user
+    private Zoom imageZoom;
+    //Automatic zoom to fit screen
+    private Zoom screenZoom;
 
     //touchscreen mode (0 = zoom, 1 = draw)
     private int touchMode;
@@ -56,16 +52,11 @@ public class DrawViewModel {
         vw = 1;
         vh = 1;
 
-
         imageSet = false;
 
-        oxI = 0;
-        oyI = 0;
-        scale = 1;
+        imageZoom = new Zoom(1, 0, 0);
 
-        oxS = 0;
-        oyS = 0;
-        scaleS = 1;
+        screenZoom = new Zoom(1, 0, 0);
 
         touchMode = 0;
 
@@ -86,14 +77,16 @@ public class DrawViewModel {
         return image;
     }
 
-    public int getOx() { return (int)(oxS + scaleS * oxI); }
+    public int getOx() {
+        return (int)(screenZoom.xOffset + screenZoom.scale * imageZoom.xOffset);
+    }
 
     public int getOy() {
-        return (int)(oyS + scaleS * oyI);
+        return (int)(screenZoom.yOffset + screenZoom.scale * imageZoom.yOffset);
     }
 
     public float getScale() {
-        return scaleS * scale;
+        return screenZoom.scale * imageZoom.scale;
     }
 
     public List<Stroke> getStrokeList() {
@@ -127,29 +120,29 @@ public class DrawViewModel {
         this.vh = vh;
 
         //resets image position for new display
-        if(imageIsSet()) centerImage();
+        if(imageIsSet()) fitToScreen();
     }
 
     //adjusts the scale and position of the image to center it on the screen
-    public void centerImage(){
-        double imageRatio = image.getWidth() / (double)image.getHeight();
-        double screenRatio = vw / (double)vh;
-        if(imageRatio >= screenRatio){
+    public void fitToScreen() {
+        double imageRatio = image.getWidth() / (double) image.getHeight();
+        double screenRatio = vw / (double) vh;
+        if (imageRatio >= screenRatio) {
             //the image is wider than the screen, it should take the full width and be centered vertically
-            scaleS = vw / (float)image.getWidth();
-            oxS = 0;
-            oyS = (int)((vh/2.0) - (image.getHeight()*scaleS/2));
+            screenZoom.scale = vw / (float) image.getWidth();
+            screenZoom.xOffset = 0;
+            screenZoom.yOffset = (int) ((vh / 2.0) - (image.getHeight() * screenZoom.scale / 2));
         } else {
             //the image is taller than the screen, it should take the full height and be centered horizontally
-            scaleS = vh / (float)image.getHeight();
-            oxS = (int)((vw/2.0) - (image.getWidth()*scaleS/2));
-            oyS = 0;
+            screenZoom.scale = vh / (float) image.getHeight();
+            screenZoom.xOffset = (int) ((vw / 2.0) - (image.getWidth() * screenZoom.scale / 2));
+            screenZoom.yOffset = 0;
         }
+    }
 
-        //reset zoom
-        oxI = 0;
-        oyI = 0;
-        scale = 1;
+    //reset zoom
+    public void centerImage(){
+        imageZoom = new Zoom(1, 0, 0);
     }
 
     public float screenToImageX(float x){
@@ -173,7 +166,7 @@ public class DrawViewModel {
     }
 
     public void sendDisplay(){
-        Zoom imageZoom = new Zoom(scale, oxI, oyI);
+        //imageZoom = new Zoom(scale, oxI, oyI);
         Log.i("DIDPLAY","scale: " + imageZoom.scale + " offset: " + imageZoom.xOffset + " " + imageZoom.yOffset);
     }
 
@@ -191,8 +184,8 @@ public class DrawViewModel {
     public void continueAction(float x, float y){
         switch(this.touchMode) {
             case 0:
-                oxI += (x - previousPos1.x)/scaleS;
-                oyI += (y - previousPos1.y)/scaleS;
+                imageZoom.xOffset += (x - previousPos1.x)/screenZoom.scale;
+                imageZoom.yOffset += (y - previousPos1.y)/screenZoom.scale;
                 Point newPos = new Point(x, y);
                 if(multitouch){
                     zoom(newPos.distance(previousPos2)/previousPos1.distance(previousPos2));
@@ -240,13 +233,13 @@ public class DrawViewModel {
     }
 
     public void zoom(float ratio){
-        float newScale = scale * ratio;
-        scale = newScale;
+        float newScale = imageZoom.scale * ratio;
+        imageZoom.scale = newScale;
 
         /*
-        scale = 2;
-        oxI = -image.getWidth()/2;
-        oyI = -image.getHeight()/2;
+        imageZoom.scale = 2;
+        imageZoom.xOffset = -image.getWidth()/2;
+        imageZoom.yOffset = -image.getHeight()/2;
         */
     }
 
