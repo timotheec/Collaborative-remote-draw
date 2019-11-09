@@ -31,10 +31,9 @@ public class DisplayWindow extends JFrame {
 	}
 
 	private void setupUi() {
-		setupFileChooser();
-		setupMenu();
 		setupCanvas();
 		setupStatusBar();
+		setupFileChooser();
 
 		pack();
 	}
@@ -45,11 +44,12 @@ public class DisplayWindow extends JFrame {
 
 	private void setupFileChooser() {
 		fileChooser = new JFileChooser();
-		//fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
 		fileChooser.setAcceptAllFileFilterUsed(false);
+		fileChooser.setDialogTitle("Select an image");
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Images (png, gif, jpg, bmp)", "png", "gif", "jpg",
 				"jpeg", "bmp");
 		fileChooser.addChoosableFileFilter(filter);
+		askImage();
 	}
 
 	private void setupCanvas() {
@@ -71,36 +71,19 @@ public class DisplayWindow extends JFrame {
 		
 		getContentPane().add(statusPanel, BorderLayout.SOUTH);
 	}
-
-	private void setupMenu() {
-		// Menu bar
-		JMenuBar menuBar = new JMenuBar();
-
-		// File menu
-		JMenu fileMenu = new JMenu("File");
-		menuBar.add(fileMenu);
-
-		JMenuItem importPhoto = new JMenuItem("Import");
-		importPhoto.addActionListener(e -> {
-			int chooserStatus = fileChooser.showOpenDialog(this);
-			if (chooserStatus == JFileChooser.APPROVE_OPTION && fileChooser.getSelectedFile().isFile())
-				try {
-					String imagePath = fileChooser.getSelectedFile().getPath();
-					canvas.setImage(imagePath);
-					AppConfig.getInstance().setImagePath(imagePath);
-					pack();
-				} catch (IOException exception) {
-					// TODO : Show up the error on a dialog window
-					System.err.println(exception.getMessage());
-				}
-		});
-		fileMenu.add(importPhoto);
-
-		// Network menu
-		JMenu networkMenu = new JMenu("Network");
-		menuBar.add(networkMenu);
-
-		getContentPane().add(menuBar, BorderLayout.NORTH);
+	
+	private void askImage() {
+		int chooserStatus = fileChooser.showOpenDialog(this);
+		if (chooserStatus == JFileChooser.APPROVE_OPTION && fileChooser.getSelectedFile().isFile())
+			try {
+				String imagePath = fileChooser.getSelectedFile().getPath();
+				canvas.setImage(imagePath);
+				AppConfig.getInstance().setImagePath(imagePath);
+				pack();
+			} catch (IOException exception) {
+				// TODO : Show up the error on a dialog window
+				System.err.println(exception.getMessage());
+			}
 	}
 	
 }

@@ -15,8 +15,6 @@ public class CanvasModel {
 	private ArrayList<ChangeListener> changeListeners = new ArrayList<>();
 	private List<Stroke> strokes = new ArrayList<>();
 	private Zoom imageZoom = new Zoom(1.0f, 0, 0);
-	
-	// TODO : add image path
 
 	public Zoom getZoom() {
 		return imageZoom;
