@@ -78,6 +78,7 @@ public class DrawView extends View implements DataListener {
                 model.endAction();
                 this.mainPointerID = -1;
                 this.secondPointerID = -1;
+                this.invalidate();
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
                 //The user presses a second finger
@@ -133,7 +134,7 @@ public class DrawView extends View implements DataListener {
         model.setTouchMode(1);
     }
     public void centerImage(){
-        model.centerImage();
+        model.resetZoom();
         this.invalidate();
     }
 

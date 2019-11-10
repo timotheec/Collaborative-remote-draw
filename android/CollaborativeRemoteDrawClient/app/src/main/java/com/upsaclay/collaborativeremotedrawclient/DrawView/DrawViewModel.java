@@ -78,11 +78,11 @@ public class DrawViewModel {
     }
 
     public int getOx() {
-        return (int) (screenZoom.xOffset + screenZoom.scale * imageZoom.xOffset);
+        return (int) (screenZoom.xOffset + imageZoom.xOffset*screenZoom.scale);
     }
 
     public int getOy() {
-        return (int) (screenZoom.yOffset + screenZoom.scale * imageZoom.yOffset);
+        return (int) (screenZoom.yOffset + imageZoom.yOffset*screenZoom.scale);
     }
 
     public float getScale() {
@@ -110,7 +110,7 @@ public class DrawViewModel {
 
         this.image = image;
 
-        centerImage();
+        resetZoom();
 
         imageSet = true;
     }
@@ -141,7 +141,7 @@ public class DrawViewModel {
     }
 
     //reset zoom
-    public void centerImage() {
+    public void resetZoom() {
         imageZoom = new Zoom(1, 0, 0);
     }
 
@@ -183,12 +183,19 @@ public class DrawViewModel {
     public void continueAction(float x, float y) {
         switch (this.touchMode) {
             case 0:
+                Point newPos = new Point(x, y);
+
+                //move the image to follow the pointer
                 imageZoom.xOffset += (x - previousPos1.x) / screenZoom.scale;
                 imageZoom.yOffset += (y - previousPos1.y) / screenZoom.scale;
-                Point newPos = new Point(x, y);
+
+                //TODO: prevent moving image out of boundaries
+
+                //adjust zoom if two fingers are on the screen
                 if (multitouch) {
                     zoom(newPos.distance(previousPos2) / previousPos1.distance(previousPos2));
                 }
+
                 previousPos1 = newPos;
                 break;
             case 1:
@@ -205,11 +212,17 @@ public class DrawViewModel {
     }
 
     public void endAction() {
-        if (touchMode == 1) {
-            dataSender.send(curStroke);
-            performingAction = false;
+        switch (this.touchMode) {
+            case 0:
+                multitouch = false;
+                //if image is too zoomed out, reset the zoom
+                if (imageZoom.scale < 1) resetZoom();
+                break;
+            case 1:
+                performingAction = false;
+                dataSender.send(curStroke);
+                break;
         }
-        multitouch = false;
     }
 
     public void addSecondPointer(float x, float y) {
@@ -232,14 +245,19 @@ public class DrawViewModel {
     }
 
     public void zoom(float ratio) {
-        float newScale = imageZoom.scale * ratio;
-        imageZoom.scale = newScale;
 
-        /*
-        imageZoom.scale = 2;
-        imageZoom.xOffset = -image.getWidth()/2;
-        imageZoom.yOffset = -image.getHeight()/2;
-        */
+        //if image is too zoomed in, prevent zooming beyond the limit
+        float zoomLimit = 100;
+        if(imageZoom.scale * ratio > zoomLimit){
+            ratio = zoomLimit/imageZoom.scale;
+        }
+
+        //apply the resulting scale
+        imageZoom.scale *= ratio;
+
+        //scale the offset based on the main pointer position
+        imageZoom.xOffset = (int) ((imageZoom.xOffset - (previousPos1.x-screenZoom.xOffset)/screenZoom.scale) * ratio + (previousPos1.x-screenZoom.xOffset)/screenZoom.scale);
+        imageZoom.yOffset = (int) ((imageZoom.yOffset - (previousPos1.y-screenZoom.yOffset)/screenZoom.scale) * ratio + (previousPos1.y-screenZoom.yOffset)/screenZoom.scale);
     }
 
     public void addStroke(Stroke stroke) {
