@@ -199,13 +199,19 @@ public class DrawViewModel {
                 previousPos1 = newPos;
                 break;
             case 1:
-                if (!performingAction) {
-                    curStroke = new Stroke();
-                    performingAction = true;
-                }
                 end = new Point(screenToImageX(x), screenToImageY(y));
-                curStroke.add(start);
-                curStroke.add(end);
+                if(imageIsSet() && screenToImageX(x) >= 0 && screenToImageY(y) >= 0 && screenToImageX(x) <= image.getWidth() && screenToImageY(y) <= image.getHeight()) {
+                    if (!performingAction) {
+                        curStroke = new Stroke();
+                        performingAction = true;
+                    }
+                    curStroke.add(start);
+                    curStroke.add(end);
+                }else{
+                    if(performingAction){
+                        endAction();
+                    }
+                }
                 start = end;
                 break;
         }
@@ -215,7 +221,7 @@ public class DrawViewModel {
         switch (this.touchMode) {
             case 0:
                 multitouch = false;
-                if(imageSet) {
+                if(imageIsSet()) {
                     //if image is too zoomed out, reset the zoom
                     if (imageZoom.scale < 1)
                         resetZoom();
