@@ -120,23 +120,25 @@ public class DrawViewModel {
         this.vh = vh;
 
         //resets image position for new display
-        if (imageIsSet()) fitToScreen();
+        fitToScreen();
     }
 
     //adjusts the scale and position of the image to center it on the screen
     public void fitToScreen() {
-        double imageRatio = image.getWidth() / (double) image.getHeight();
-        double screenRatio = vw / (double) vh;
-        if (imageRatio >= screenRatio) {
-            //the image is wider than the screen, it should take the full width and be centered vertically
-            screenZoom.scale = vw / (float) image.getWidth();
-            screenZoom.xOffset = 0;
-            screenZoom.yOffset = (int) ((vh / 2.0) - (image.getHeight() * screenZoom.scale / 2));
-        } else {
-            //the image is taller than the screen, it should take the full height and be centered horizontally
-            screenZoom.scale = vh / (float) image.getHeight();
-            screenZoom.xOffset = (int) ((vw / 2.0) - (image.getWidth() * screenZoom.scale / 2));
-            screenZoom.yOffset = 0;
+        if (imageIsSet()){
+            double imageRatio = image.getWidth() / (double) image.getHeight();
+            double screenRatio = vw / (double) vh;
+            if (imageRatio >= screenRatio) {
+                //the image is wider than the screen, it should take the full width and be centered vertically
+                screenZoom.scale = vw / (float) image.getWidth();
+                screenZoom.xOffset = 0;
+                screenZoom.yOffset = (int) ((vh / 2.0) - (image.getHeight() * screenZoom.scale / 2));
+            } else {
+                //the image is taller than the screen, it should take the full height and be centered horizontally
+                screenZoom.scale = vh / (float) image.getHeight();
+                screenZoom.xOffset = (int) ((vw / 2.0) - (image.getWidth() * screenZoom.scale / 2));
+                screenZoom.yOffset = 0;
+            }
         }
     }
 
@@ -189,8 +191,6 @@ public class DrawViewModel {
                 imageZoom.xOffset += (x - previousPos1.x) / screenZoom.scale;
                 imageZoom.yOffset += (y - previousPos1.y) / screenZoom.scale;
 
-                //TODO: prevent moving image out of boundaries
-
                 //adjust zoom if two fingers are on the screen
                 if (multitouch) {
                     zoom(newPos.distance(previousPos2) / previousPos1.distance(previousPos2));
@@ -215,8 +215,20 @@ public class DrawViewModel {
         switch (this.touchMode) {
             case 0:
                 multitouch = false;
-                //if image is too zoomed out, reset the zoom
-                if (imageZoom.scale < 1) resetZoom();
+                if(imageSet) {
+                    //if image is too zoomed out, reset the zoom
+                    if (imageZoom.scale < 1)
+                        resetZoom();
+                    //if image is moved out of bounds, move it back
+                    if (imageZoom.xOffset > 0)
+                        imageZoom.xOffset = 0;
+                    if (imageZoom.xOffset < image.getWidth() - image.getWidth() * imageZoom.scale)
+                        imageZoom.xOffset = (int) (image.getWidth() - image.getWidth() * imageZoom.scale);
+                    if (imageZoom.yOffset > 0)
+                        imageZoom.yOffset = 0;
+                    if (imageZoom.yOffset < image.getHeight() - image.getHeight() * imageZoom.scale)
+                        imageZoom.yOffset = (int) (image.getHeight() - image.getHeight() * imageZoom.scale);
+                }
                 break;
             case 1:
                 performingAction = false;
@@ -245,11 +257,17 @@ public class DrawViewModel {
     }
 
     public void zoom(float ratio) {
-
-        //if image is too zoomed in, prevent zooming beyond the limit
-        float zoomLimit = 100;
-        if(imageZoom.scale * ratio > zoomLimit){
-            ratio = zoomLimit/imageZoom.scale;
+        if (imageIsSet()) {
+            //if image is too zoomed in, prevent zooming beyond the limit (wiew is at least 10 pixels wide & 10 pixels high
+            float zoomLimit;
+            if (image.getWidth() >= image.getHeight()) {
+                zoomLimit = image.getHeight() / 10;
+            } else {
+                zoomLimit = image.getWidth() / 10;
+            }
+            if (imageZoom.scale * ratio > zoomLimit) {
+                ratio = zoomLimit / imageZoom.scale;
+            }
         }
 
         //apply the resulting scale

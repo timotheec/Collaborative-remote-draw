@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.ToggleButton;
 
 import com.upsaclay.collaborativeremotedrawclient.DrawView.DrawView;
 import com.upsaclay.collaborativeremotedrawclient.network.SocketClient;
@@ -20,6 +22,7 @@ import com.upsaclay.collaborativeremotedrawclient.network.SocketClient;
  */
 public class MainActivity extends AppCompatActivity {
     DrawView drawView;
+    ToggleButton modeToggle;
 
     /**
      * Whether or not the system UI should be auto-hidden after
@@ -105,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
         mContentView = findViewById(R.id.fullscreen_content);
 
         drawView = findViewById(R.id.fullscreen_content);
+        modeToggle = findViewById(R.id.modeButton);
 
         String ipAddr = AppConfig.getInstance().getServerIp();
         int portNum = AppConfig.getInstance().getServerPort();
@@ -113,6 +117,17 @@ public class MainActivity extends AppCompatActivity {
 
         drawView.setDataListener(sock);
         sock.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+        modeToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    drawView.draw();
+                }else{
+                    drawView.zoom();
+                }
+            }
+        });
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
@@ -187,14 +202,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void centerImage(View view){
         drawView.centerImage();
-    }
-
-    public void zoom(View view){
-        drawView.zoom();
-    }
-
-    public void draw(View view){
-        drawView.draw();
     }
 
     public void display(View view){

@@ -16,15 +16,17 @@ public class ConnectActivity extends AppCompatActivity {
     }
 
     public void connect(View view){
-        //Create the intent
-        Intent intent = new Intent(this, MainActivity.class);
         //Get the values
-        EditText ipAddrInput = findViewById(R.id.ipAddrInput);
-        EditText portNumInput = findViewById(R.id.portNumInput);
-        //Add the value to the intent
-        AppConfig.getInstance().setServerIp(ipAddrInput.getText().toString());
-        AppConfig.getInstance().setServerPort(Integer.valueOf(portNumInput.getText().toString()));
-        //Open the intent
-        startActivity(intent);
+        String ipAddr = ((EditText)findViewById(R.id.ipAddrInput)).getText().toString();
+        String port = ((EditText)findViewById(R.id.portNumInput)).getText().toString();
+        if(!ipAddr.isEmpty() && !port.isEmpty()) {
+            //Create the intent
+            Intent intent = new Intent(this, MainActivity.class);
+            //Add the value to the intent
+            AppConfig.getInstance().setServerIp(ipAddr);
+            AppConfig.getInstance().setServerPort(Integer.valueOf(port));
+            //Open the intent
+            startActivity(intent);
+        }
     }
 }
