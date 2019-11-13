@@ -15,9 +15,10 @@ Install java 11 or higher (lowest version haven't been tested).
 #### 1.2 - Run the server app
 
 Find the *server.jar* executable under *executables* folder.
+
 Run the file with the way you prefer.
 
-On linux you can run the following command : 
+On linux you can run the following command from this folder: 
 ```
 java -jar server.jar
 ```
@@ -26,7 +27,19 @@ java -jar server.jar
 
 #### 2.1 - Prerequisites
 
-#### 2.2 - Run the server app
+Install adb.
+
+#### 2.2 - Install the client app on a device
+
+Make sure your android device is connected to your computer and you accepted the computer as a valid source on your phone.
+
+Find the *client.apk* executable under *executables* folder.
+
+Run the following following command using adb cli from this folder:
+```
+adb install client.apk
+```
+
 
 ## From source
 
