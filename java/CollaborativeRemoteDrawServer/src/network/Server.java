@@ -1,6 +1,7 @@
 package network;
 
 import java.io.IOException;
+
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -11,7 +12,12 @@ import java.util.List;
 import main.Canvas;
 import shared.Stroke;
 
-// Source : https://openclassrooms.com/fr/courses/2654601-java-et-la-programmation-reseau/2668874-les-sockets-cote-serveur
+/**
+ * Class that manages connections of all client
+ * 
+ * Source : https://openclassrooms.com/fr/courses/2654601-java-et-la-programmation-reseau/2668874-les-sockets-cote-serveur
+ * Note : code is inspired from an openclassrooms solution but completely adapted to our needs.
+ */
 public class Server implements DataListener {
 
 	private final static int MAX_CLIENT_CONNECTIONS = 100;
@@ -36,6 +42,9 @@ public class Server implements DataListener {
 		this.canvas.setDatalistener(this);
 	}
 
+	/**
+	 * Open the server
+	 */
 	public void open() {
 		Thread t = new Thread(new Runnable() {
 			@Override
@@ -83,7 +92,9 @@ public class Server implements DataListener {
 		canvas.addStroke(stroke);
 	}
 
-	// Remove all closed socket keeping in clients attribute
+	/**
+	 * Remove all closed socket keeping in clients attribute
+	 */
 	private void removeClosedSocket() {
 		for (Iterator<Socket> iter = clients.listIterator(); iter.hasNext();) {
 			Socket sock = iter.next();

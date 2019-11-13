@@ -14,10 +14,16 @@ import com.google.gson.Gson;
 
 import shared.Stroke;
 
-// This class regroup a set of methods usefull for network communication and configuration. 
+/**
+ *  This class regroup a set of methods usefull for network communication and configuration. 
+ *
+ */
 public class NetworkHelper {
 
-	// Helper to get the ip of the host running the app
+	/**
+	 *  Helper to get the ip of the host running the app
+	 * @return host address as a string
+	 */
 	public static String getHostAdress() {
 		String host = "127.0.0.1";
 		try (final DatagramSocket socket = new DatagramSocket()) {
@@ -29,7 +35,11 @@ public class NetworkHelper {
 		return host;
 	}
 
-	// Send an image trough network
+	/**
+	 *  Send an image trough network
+	 * @param image
+	 * @param socket
+	 */
 	public static void sendImage(BufferedImage image, final Socket socket) {
 		try {
 			byte[] imgBytes = ((DataBufferByte) image.getData().getDataBuffer()).getData();
@@ -43,12 +53,20 @@ public class NetworkHelper {
 		}
 	}
 
-	// Send already existing stroke trough network
+	/**
+	 * Send already existing stroke trough network
+	 * @param strokes
+	 * @param socket
+	 */
 	public static void sendStrokes(List<Stroke> strokes, final Socket socket) {
 		sendData(new Gson().toJson(strokes), socket);
 	}
 
-	// Send string trough network
+	/**
+	 * Send string trough network
+	 * @param message
+	 * @param socket
+	 */
 	private static void sendData(final String message, final Socket socket) {
 		try {
 			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
@@ -61,7 +79,11 @@ public class NetworkHelper {
 
 	}
 
-	// Send stroke trough network
+	/**
+	 * Send stroke trough network
+	 * @param stroke
+	 * @param socket
+	 */
 	public static void sendStroke(final Stroke stroke, final Socket socket) {
 		// A thread is required to prevent main thread blocking
 		new Thread(new Runnable() {

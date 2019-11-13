@@ -6,7 +6,11 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-// Class that keep persistent states of the app between runs.
+
+/**
+ *  Class that keep persistent states of the app between runs.
+ *
+ */
 
 public class AppConfig {
 

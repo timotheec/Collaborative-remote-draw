@@ -12,9 +12,12 @@ import main.AppConfig;
 import main.Canvas;
 import shared.Stroke;
 import shared.Zoom;
-
-// Source : https://openclassrooms.com/fr/courses/2654601-java-et-la-programmation-reseau/2668874-les-sockets-cote-serveur
-// Note : code is inspire from an openclassrooms solutions but completly adpated to our needs.
+/**
+ * Class that handle communication with a client
+ * 
+ * Source : https://openclassrooms.com/fr/courses/2654601-java-et-la-programmation-reseau/2668874-les-sockets-cote-serveur
+ * Note : code is inspired from an openclassrooms solution but completely adapted to our needs.
+ */
 public class ClientProcessor implements Runnable {
 
 	private Socket socket;
@@ -89,12 +92,19 @@ public class ClientProcessor implements Runnable {
 		}
 	}
 	
-	// Notify the listener (the model) that a stroke is arrived
+	/**
+	 *  Notify the listener (the model) that a stroke is arrived
+	 * @param stroke
+	 */
 	private void publishStroke(Stroke stroke) {
 		dataListener.onRecieveStroke(stroke);
 	}
 
-	// Read the response from the client
+	/**
+	 * Read the response from the client
+	 * @return client message as a String
+	 * @throws IOException
+	 */
 	private String read() throws IOException {
 		int size = reader.readInt();
 		byte[] b = new byte[size];
