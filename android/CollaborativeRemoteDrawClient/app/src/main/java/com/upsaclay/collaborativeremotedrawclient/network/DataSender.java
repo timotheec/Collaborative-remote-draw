@@ -3,6 +3,7 @@ package com.upsaclay.collaborativeremotedrawclient.network;
 import com.upsaclay.collaborativeremotedrawclient.Shared.Stroke;
 import com.upsaclay.collaborativeremotedrawclient.Shared.Zoom;
 
+// This class is wrapper to send data (stroke or zoom) without blocking the UI thread
 public class DataSender implements Runnable {
 
     private DataListener dataListener;

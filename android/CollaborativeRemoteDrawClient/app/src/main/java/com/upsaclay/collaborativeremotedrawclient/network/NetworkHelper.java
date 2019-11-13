@@ -15,6 +15,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+// This class regroup a set of methods usefull for network communication and configuration.
 public class NetworkHelper {
 
     public static Bitmap receiveImage(Socket socket) {
@@ -45,6 +46,7 @@ public class NetworkHelper {
         return response;
     }
 
+    // Receive and deserialize a list of strokes received from the server
     public static List<Stroke> receiveStrokes(Socket socket) {
         List<Stroke> strokes = new ArrayList<>();
         Gson gson = new Gson();
@@ -58,6 +60,7 @@ public class NetworkHelper {
         return strokes;
     }
 
+    // Send a string message to the server
     public static void sendMessage(final String message, final DataOutputStream out) {
         try {
             out.writeInt(message.length());

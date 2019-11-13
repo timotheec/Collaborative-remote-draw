@@ -14,6 +14,7 @@ import com.google.gson.Gson;
 
 import shared.Stroke;
 
+// This class regroup a set of methods usefull for network communication and configuration. 
 public class NetworkHelper {
 
 	// Helper to get the ip of the host running the app
@@ -60,8 +61,9 @@ public class NetworkHelper {
 
 	}
 
-	// Send string trough network
+	// Send stroke trough network
 	public static void sendStroke(final Stroke stroke, final Socket socket) {
+		// A thread is required to prevent main thread blocking
 		new Thread(new Runnable() {
 			@Override
 			public void run() {

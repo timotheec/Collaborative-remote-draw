@@ -1,5 +1,7 @@
 package com.upsaclay.collaborativeremotedrawclient.Shared;
 
+// Shared class between the client and the server to advantage of the both side using java
+// Represent a point in 2D space
 public class Point {
 
     public float x, y;

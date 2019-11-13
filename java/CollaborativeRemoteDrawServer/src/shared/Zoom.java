@@ -1,5 +1,7 @@
 package shared;
 
+//Shared class between the client and the server to advantage of the both side using java
+//Represent a zoom in 2D space
 public class Zoom {
 	
 	public float scale;

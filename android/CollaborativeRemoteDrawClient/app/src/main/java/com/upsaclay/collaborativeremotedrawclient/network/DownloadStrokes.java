@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+// Worker class to download all strokes from the server without blocking UI thread
 public class DownloadStrokes extends AsyncTask<Void, Void, List<Stroke>> {
 
     private String host;

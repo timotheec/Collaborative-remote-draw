@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.DataOutputStream;
 import java.net.Socket;
 
+// This class handle communication with the server
 public class SocketClient extends AsyncTask<Void, String, Void> implements DataListener {
     private Socket socket = null;
     private DataOutputStream writer = null;
@@ -29,6 +30,8 @@ public class SocketClient extends AsyncTask<Void, String, Void> implements DataL
 
     @Override
     protected Void doInBackground(Void... arg0) {
+
+        // Connect to the server
         try {
             socket = new Socket(host, port);
             writer = new DataOutputStream(socket.getOutputStream());
@@ -41,7 +44,9 @@ public class SocketClient extends AsyncTask<Void, String, Void> implements DataL
             if (socket == null || isCancelled() || socket.isClosed())
                 break;
             try {
+                // Listen continuously message from the server
                 String response = NetworkHelper.readMessage(reader);
+                // Publish continuously on the UI thread
                 publishProgress(response);
             } catch (Exception e) {
                 Log.i("INFO", "Connection closed");
@@ -55,6 +60,7 @@ public class SocketClient extends AsyncTask<Void, String, Void> implements DataL
 
     @Override
     protected void onProgressUpdate(String... messages) {
+        // Notify the view that a stroke is arrived
         for (String message : messages)
             dataListener.onRecieveStroke(gson.fromJson(message, Stroke.class));
     }
@@ -70,11 +76,13 @@ public class SocketClient extends AsyncTask<Void, String, Void> implements DataL
 
     @Override
     public void onRecieveStroke(Stroke stroke) {
+        // A stroke have been drawing by the client, send it to the server
         NetworkHelper.sendMessage(gson.toJson(stroke), writer);
     }
 
     @Override
     public void onSendZoom(Zoom zoom) {
+        // A zoom was ordered by the client, notify the server
         NetworkHelper.sendMessage(gson.toJson(zoom), writer);
     }
 }

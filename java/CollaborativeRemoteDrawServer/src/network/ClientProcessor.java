@@ -41,21 +41,14 @@ public class ClientProcessor implements Runnable {
 				// We waiting for the client demand
 				String response = read();
 
-				// We print some information for debugging purpose
-				InetSocketAddress remote = (InetSocketAddress) socket.getRemoteSocketAddress();
-				String debug = "";
-				debug = "Thread : " + Thread.currentThread().getName() + ". ";
-				debug += "Asking for host adress : " + remote.getAddress().getHostAddress() + ".";
-				debug += " on port : " + remote.getPort() + ".\n";
-				debug += "\t -> Command received : " + response + "\n";
-//				System.out.println("\n" + debug);
-
 				switch (response.toUpperCase()) {
+				// Send the image when the client asking background
 				case "BACKGROUND":
 					NetworkHelper.sendImage(AppConfig.getInstance().getImage(), socket);
 					System.out.println("image sent");
 					closeConnexion = true;
 					break;
+				// Send all the strokes
 				case "ALL_STROKES":
 					System.out.println(gson.toJson(canvas.getStrokes()));
 					NetworkHelper.sendStrokes(canvas.getStrokes(), socket);
@@ -66,6 +59,7 @@ public class ClientProcessor implements Runnable {
 					break;
 				default:
 					try {
+						// Distinguish zoom and stroke received from the client
 						if (response.startsWith("{\"scale\"")) {
 							canvas.setZoom(gson.fromJson(response, Zoom.class));
 						} else {
@@ -94,14 +88,15 @@ public class ClientProcessor implements Runnable {
 			}
 		}
 	}
-
+	
+	// Notify the listener (the model) that a stroke is arrived
 	private void publishStroke(Stroke stroke) {
 		dataListener.onRecieveStroke(stroke);
 	}
 
 	// Read the response from the client
 	private String read() throws IOException {
-		int size = reader.readInt(); // TODO : create a bug when a client log out ?
+		int size = reader.readInt();
 		byte[] b = new byte[size];
 		reader.readFully(b);
 		return new String(b, 0, size);

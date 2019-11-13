@@ -4,6 +4,8 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
 
+//Shared class between the client and the server to advantage of the both side using java
+//Represent a stroke in 2D space
 public class Stroke {
 
 	private List<Point> points = new ArrayList<>();

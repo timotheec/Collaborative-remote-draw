@@ -47,7 +47,7 @@ public class Server implements DataListener {
 						clients.add(client);
 
 						// Process the requests in a separate thread
-						System.out.println("Connexion cliente reçue.");
+						System.out.println("Client connection received");
 						Thread t = new Thread(new ClientProcessor(client, canvas, Server.this));
 						t.start();
 
@@ -83,6 +83,7 @@ public class Server implements DataListener {
 		canvas.addStroke(stroke);
 	}
 
+	// Remove all closed socket keeping in clients attribute
 	private void removeClosedSocket() {
 		for (Iterator<Socket> iter = clients.listIterator(); iter.hasNext();) {
 			Socket sock = iter.next();

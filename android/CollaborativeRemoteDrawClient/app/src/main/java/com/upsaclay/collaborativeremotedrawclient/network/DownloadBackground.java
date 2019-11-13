@@ -7,6 +7,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
+// Worker class to download an image from the server without blocking UI thread
 public class DownloadBackground extends AsyncTask<Void, Void, Bitmap> {
 
     private String host;
