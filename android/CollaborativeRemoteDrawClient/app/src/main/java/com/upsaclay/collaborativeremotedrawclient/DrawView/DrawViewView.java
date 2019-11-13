@@ -10,15 +10,28 @@ import com.upsaclay.collaborativeremotedrawclient.Shared.Stroke;
 
 public class DrawViewView {
 
+    /**
+     * controller of the interface
+     */
     private DrawView controller;
 
+    /**
+     * used to paint the strokes on the screen
+     */
     private Paint paint;
 
+    /**
+     * initialize the view and its variables
+     */
     public DrawViewView(DrawView controller){
         this.controller = controller;
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     }
 
+    /**
+     * draw the image and strokes
+     * @param canvas canvas to draw on
+     */
     public void draw(Canvas canvas) {
         DrawViewModel model = controller.getModel();
         //draw image
@@ -29,7 +42,7 @@ public class DrawViewView {
             m.postTranslate(model.getOx(),model.getOy());
             canvas.drawBitmap(image, m, paint);
         }
-        paint.setStrokeWidth(10);
+        paint.setStrokeWidth((model.getWidth() + model.getHeight())/400);
         float startX = 0;
         float startY = 0;
         float endX;
@@ -52,7 +65,7 @@ public class DrawViewView {
 
         //draw the current stroke
         paint.setColor(Color.BLUE);
-        if(model.isPerformingAction()) {
+        if(model.strokeIsInProgress()) {
             Stroke s = model.getCurStroke();
             for(int i = 0; i < s.getLength(); i++){
                 if(i % 2 == 0){

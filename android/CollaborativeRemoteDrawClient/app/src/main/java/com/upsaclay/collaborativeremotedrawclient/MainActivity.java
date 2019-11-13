@@ -153,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
         delayedHide(100);
     }
 
+
     private void toggle() {
         if (mVisible) {
             hide();
@@ -200,10 +201,20 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
+
+
+
+    /**
+     * Center the image in the drawView
+     */
     public void centerImage(View view){
         drawView.centerImage();
     }
 
+    /**
+     * display the current view on the big screen
+     */
     public void display(View view){
         drawView.sendDisplay();
     }

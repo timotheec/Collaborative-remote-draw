@@ -15,6 +15,9 @@ public class ConnectActivity extends AppCompatActivity {
         setContentView(R.layout.activity_connect);
     }
 
+    /**
+     * verifies the content of the fields, then launches main activity
+     */
     public void connect(View view){
         //Get the values
         String ipAddr = ((EditText)findViewById(R.id.ipAddrInput)).getText().toString();

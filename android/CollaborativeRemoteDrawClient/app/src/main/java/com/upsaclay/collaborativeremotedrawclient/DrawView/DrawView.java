@@ -17,15 +17,30 @@ import java.util.concurrent.ExecutionException;
 
 public class DrawView extends View implements DataListener {
 
+    /**
+     * model of the interface
+     */
     private DrawViewModel model;
 
+    /**
+     * view of the interface
+     */
     private DrawViewView view;
 
-    //used to track the main pointer in a touch event
+    /**
+     * used to track the main pointer in a touch event
+     */
     private int mainPointerID;
-    //used to track the second pointer in a touch event
+
+    /**
+     * used to track the second pointer in a touch event
+     */
     private int secondPointerID;
 
+    /**
+     * initialize the DrawView and its variables.
+     * starts connection with server
+     */
     public DrawView(Context context, AttributeSet attrSet) {
         super(context, attrSet);
         model = new DrawViewModel();
@@ -46,14 +61,26 @@ public class DrawView extends View implements DataListener {
         }
     }
 
+    /**
+     * get reference to the model
+     * @return model
+     */
     public DrawViewModel getModel() {
         return model;
     }
 
+    /**
+     * add the dataListeer to the model
+     * @param dataListener dataListener to add to the model
+     */
     public void setDataListener(DataListener dataListener) {
         model.setDataListener(dataListener);
     }
 
+    /**
+     * handle touch event by tracking the main pointer and a secondary pointer, then sending their actions to the model
+     * @param e event to handle
+     */
     @Override
     public boolean onTouchEvent(MotionEvent e) {
         switch (e.getActionMasked()) {
@@ -102,6 +129,13 @@ public class DrawView extends View implements DataListener {
         return true;
     }
 
+    /**
+     * handle view size changes, update the model and refresh the view
+     * @param w new width
+     * @param h new height
+     * @param oldw old width
+     * @param oldh old height
+     */
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
@@ -109,35 +143,57 @@ public class DrawView extends View implements DataListener {
         this.invalidate();
     }
 
+    /**
+     * handles drawing by calling the view
+     * @param canvas the canvas on which to draw
+     */
     @Override
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         view.draw(canvas);
     }
 
-    // stroke received from the server
+    /**
+     * receive a stroke from the server, add it to the model and refresh the view
+     * @param stroke the received stroke
+     */
     @Override
     public void onRecieveStroke(Stroke stroke) {
         model.addStroke(stroke);
         this.invalidate();
     }
 
-    // useless here but required by implementing interface
+    /**
+     * useless here but required to implement interface
+     */
     @Override
     public void onSendZoom(Zoom zoom) { }
 
+    /**
+     * zoom mode selected
+     */
     public void zoom(){
         model.setTouchMode(0);
     }
 
+    /**
+     * draw mode selected
+     */
     public void draw(){
         model.setTouchMode(1);
     }
+
+    /**
+     * center the image to fit on the screen
+     */
     public void centerImage(){
         model.resetZoom();
         this.invalidate();
     }
 
+    /**
+     * send the current display to the server
+     */
     public void sendDisplay(){
         model.sendDisplay();
     }

@@ -1,7 +1,6 @@
 package com.upsaclay.collaborativeremotedrawclient.DrawView;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 
 import com.upsaclay.collaborativeremotedrawclient.Shared.Point;
 import com.upsaclay.collaborativeremotedrawclient.Shared.Stroke;
@@ -13,44 +12,98 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DrawViewModel {
-    //size of the view
-    private int vw, vh;
+    /**
+     * size of the view
+     */
+    private int width, height;
 
-    //DataSender used to send inputs to the server
+    /**
+     * DataSender used to send inputs to the server
+     */
     private DataSender dataSender;
 
-    //used to store image data
+    /**
+     * used to store image data
+     */
     private Bitmap image;
+    /**
+     * whether or not the image is set
+     */
     private boolean imageSet;
 
+
+
+
+
     //display properties
-    //Zoom set by the user
+    /**
+     * Zoom set manually by the user
+     * offset is from top left corner of the image's original position
+     */
     private Zoom imageZoom;
-    //Automatic zoom to fit screen
+    /**
+     * Automatic zoom to fit screen
+     * offset is from top left corner of view
+     */
     private Zoom screenZoom;
 
-    //touchscreen mode (0 = zoom, 1 = draw)
+
+
+
+
+
+    /**
+     * touch screen mode
+     * 0 = zoom, 1 = draw
+     */
     private int touchMode;
 
     //used to handle zooming
-    //previous position of first finger
+    /**
+     * previous position of the first pointer
+     */
     private Point previousPos1;
-    //previous position of second finger
+    /**
+     * previous position of second pointer
+     */
     private Point previousPos2;
-    //true if more than one finger is on the screen
+    /**
+     * true if more than one finger is on the screen
+     */
     private boolean multitouch;
 
+
+
+
     //used to store stroke data
+    /**
+     * strokes from server
+     */
     private List<Stroke> strokeList;
+    /**
+     * stroke currently drawn by the user
+     */
     private Stroke curStroke;
-    private boolean performingAction;
+    /**
+     * the current stroke is in progress
+     */
+    private boolean strokeInProgress;
+    /**
+     * start & end of the current linear portion of the current stroke
+     */
     private Point start, end;
 
-    //used to handle zooming
 
+
+
+
+    /**
+     * initialize the model and its variables
+     * sets default/placeholder values while waiting for updates
+     */
     public DrawViewModel() {
-        vw = 1;
-        vh = 1;
+        width = 1;
+        height = 1;
 
         imageSet = false;
 
@@ -65,112 +118,207 @@ public class DrawViewModel {
 
         strokeList = new ArrayList<>();
         curStroke = new Stroke();
-        performingAction = false;
+        strokeInProgress = false;
         start = new Point(0, 0);
     }
 
+    /**
+     * getter for width
+     * @return width of the view
+     */
+    public int getWidth() {
+        return width;
+    }
+
+    /**
+     * getter for height
+     * @return height of the view
+     */
+    public int getHeight() {
+        return height;
+    }
+
+    /**
+     * getter for imageSet
+     * @return whether or not the image is set
+     */
     public boolean imageIsSet() {
         return imageSet;
     }
 
+    /**
+     * getter for image
+     * @return image data
+     */
     public Bitmap getImage() {
         return image;
     }
 
+    /**
+     * combines the horizontal offset values of the different zooms
+     * @return offset from left side of the view
+     */
     public int getOx() {
         return (int) (screenZoom.xOffset + imageZoom.xOffset*screenZoom.scale);
     }
 
+    /**
+     * combines the vertical offset values of the different zooms
+     * @return offset from top of the view
+     */
     public int getOy() {
         return (int) (screenZoom.yOffset + imageZoom.yOffset*screenZoom.scale);
     }
 
+    /**
+     * combines the scale values of the different zooms
+     * @return total scale
+     */
     public float getScale() {
         return screenZoom.scale * imageZoom.scale;
     }
 
+    /**
+     * getter for strokeList
+     * @return strokes from server
+     */
     public List<Stroke> getStrokeList() {
         return strokeList;
     }
 
+    /**
+     * getter for curStroke
+     * @return stroke currently drawn by the user
+     */
     public Stroke getCurStroke() {
         return curStroke;
     }
 
-    public boolean isPerformingAction() {
-        return performingAction;
+    /**
+     * getter for strokeInProgress
+     * @return the current stroke is in progress
+     */
+    public boolean strokeIsInProgress() {
+        return strokeInProgress;
     }
 
+    /**
+     * set the initial list of strokes
+     * @param strokeList initial stroke list
+     */
     public void setStrokeList(List<Stroke> strokeList) {
         this.strokeList = strokeList;
     }
 
+    /**
+     * set the image and make it fit on the screen
+     * @param image image
+     */
     public void setImage(Bitmap image) {
-        Log.i("INFO", "Image size : " + image.getWidth() + " : " + image.getHeight());
-
         this.image = image;
+        imageSet = true;
 
         resetZoom();
-
-        imageSet = true;
-    }
-
-    public void setViewSize(int vw, int vh) {
-        this.vw = vw;
-        this.vh = vh;
-
-        //resets image position for new display
         fitToScreen();
     }
 
-    //adjusts the scale and position of the image to center it on the screen
+    /**
+     * set the size of the view and make the image fit in the new view area
+     * @param vw new width
+     * @param vh new height
+     */
+    public void setViewSize(int vw, int vh) {
+        this.width = vw;
+        this.height = vh;
+
+        fitToScreen();
+    }
+
+    /**
+     * adjust the screen zoom so that the image fits in the middle of the screen with the default imageZoom
+     */
     public void fitToScreen() {
         if (imageIsSet()){
             double imageRatio = image.getWidth() / (double) image.getHeight();
-            double screenRatio = vw / (double) vh;
+            double screenRatio = width / (double) height;
             if (imageRatio >= screenRatio) {
                 //the image is wider than the screen, it should take the full width and be centered vertically
-                screenZoom.scale = vw / (float) image.getWidth();
+                screenZoom.scale = width / (float) image.getWidth();
                 screenZoom.xOffset = 0;
-                screenZoom.yOffset = (int) ((vh / 2.0) - (image.getHeight() * screenZoom.scale / 2));
+                screenZoom.yOffset = (int) ((height / 2.0) - (image.getHeight() * screenZoom.scale / 2));
             } else {
                 //the image is taller than the screen, it should take the full height and be centered horizontally
-                screenZoom.scale = vh / (float) image.getHeight();
-                screenZoom.xOffset = (int) ((vw / 2.0) - (image.getWidth() * screenZoom.scale / 2));
+                screenZoom.scale = height / (float) image.getHeight();
+                screenZoom.xOffset = (int) ((width / 2.0) - (image.getWidth() * screenZoom.scale / 2));
                 screenZoom.yOffset = 0;
             }
         }
     }
 
-    //reset zoom
+    /**
+     * reset imageZoom to the default value
+     */
     public void resetZoom() {
         imageZoom = new Zoom(1, 0, 0);
     }
 
+    /**
+     * convert a horizontal position on the screen to the corresponding position on the image
+     * @param x position on screen space
+     * @return position on image space
+     */
     public float screenToImageX(float x) {
         return (x - getOx()) / getScale();
     }
 
+    /**
+     * convert a vertical position on the screen to the corresponding position on the image
+     * @param y position on screen space
+     * @return position on image space
+     */
     public float screenToImageY(float y) {
         return (y - getOy()) / getScale();
     }
 
+    /**
+     * convert a horizontal position on the image to the corresponding position on the screen
+     * @param x position on image space
+     * @return position on screen space
+     */
     public float imageToScreenX(float x) {
         return x * getScale() + getOx();
     }
 
+    /**
+     * convert a vertical position on the image to the corresponding position on the screen
+     * @param y position on image space
+     * @return position on screen space
+     */
     public float imageToScreenY(float y) {
         return y * getScale() + getOy();
     }
 
+    /**
+     * switch between the touch screen modes
+     * 0 = zoom, 1 = draw
+     * @param touchMode chosen mode
+     */
     public void setTouchMode(int touchMode) {
         this.touchMode = touchMode;
     }
 
+    /**
+     * send the current display to the server
+     */
     public void sendDisplay() {
         dataSender.send(imageZoom);
     }
 
+    /**
+     * user begins an action, save the coordinate to use later
+     * @param x coordinate of action
+     * @param y coordinate of action
+     */
     public void beginAction(float x, float y) {
         switch (this.touchMode) {
             case 0:
@@ -182,6 +330,11 @@ public class DrawViewModel {
         }
     }
 
+    /**
+     * user continues an action, result depends on touch mode
+     * @param x coordinate of action
+     * @param y coordinate of action
+     */
     public void continueAction(float x, float y) {
         switch (this.touchMode) {
             case 0:
@@ -199,24 +352,51 @@ public class DrawViewModel {
                 previousPos1 = newPos;
                 break;
             case 1:
-                end = new Point(screenToImageX(x), screenToImageY(y));
-                if(imageIsSet() && screenToImageX(x) >= 0 && screenToImageY(y) >= 0 && screenToImageX(x) <= image.getWidth() && screenToImageY(y) <= image.getHeight()) {
-                    if (!performingAction) {
+                if(imageIsSet()){
+                    float xi = screenToImageX(x);
+                    float yi = screenToImageY(y);
+
+                    //prevent drawing out of bounds
+                    boolean outOfBounds = false;
+                    if (xi < 0){
+                        xi = 0;
+                        outOfBounds = true;
+                    }
+                    if (yi < 0){
+                        yi = 0;
+                        outOfBounds = true;
+                    }
+                    if(xi > image.getWidth()){
+                        xi = image.getWidth();
+                        outOfBounds = true;
+                    }
+                    if(yi > image.getHeight()) {
+                        yi = image.getHeight();
+                        outOfBounds = true;
+                    }
+                    end = new Point(xi, yi);
+
+                    //start new stroke if necessary
+                    if (!strokeInProgress && !outOfBounds) {
                         curStroke = new Stroke();
-                        performingAction = true;
+                        strokeInProgress = true;
                     }
-                    curStroke.add(start);
-                    curStroke.add(end);
-                }else{
-                    if(performingAction){
-                        endAction();
+
+                    //add points to the stroke if necessary
+                    if(strokeInProgress){
+                        curStroke.add(start);
+                        curStroke.add(end);
+                        if(outOfBounds) endAction();
                     }
+                    start = end;
                 }
-                start = end;
                 break;
         }
     }
 
+    /**
+     * user action is over, process the action
+     */
     public void endAction() {
         switch (this.touchMode) {
             case 0:
@@ -237,12 +417,20 @@ public class DrawViewModel {
                 }
                 break;
             case 1:
-                performingAction = false;
-                dataSender.send(curStroke);
+                //if a stroke was in progress, send it to the server
+                if(strokeInProgress) {
+                    strokeInProgress = false;
+                    dataSender.send(curStroke);
+                }
                 break;
         }
     }
 
+    /**
+     * a secondary pointer was added, store its position and start multi touch action
+     * @param x coordinate of second pointer
+     * @param y coordinate of second pointer
+     */
     public void addSecondPointer(float x, float y) {
         if (touchMode == 0) {
             previousPos2 = new Point(x, y);
@@ -250,6 +438,11 @@ public class DrawViewModel {
         }
     }
 
+    /**
+     * the secondary pointer has moved, adjust zoom based on its movement
+     * @param x coordinate of second pointer
+     * @param y coordinate of second pointer
+     */
     public void moveSecondPointer(float x, float y) {
         if (touchMode == 0) {
             Point newPos = new Point(x, y);
@@ -258,13 +451,20 @@ public class DrawViewModel {
         }
     }
 
+    /**
+     * the secondary pointer was removed, end multi touch action
+     */
     public void removeSecondPointer() {
         this.multitouch = false;
     }
 
+    /**
+     * adjusts image zoom with the main pointer as origin
+     * @param ratio ratio to apply to imageZoom
+     */
     public void zoom(float ratio) {
         if (imageIsSet()) {
-            //if image is too zoomed in, prevent zooming beyond the limit (wiew is at least 10 pixels wide & 10 pixels high
+            //if image is too zoomed in, prevent zooming beyond the limit (wiew is at least 10 pixels wide & 10 pixels high)
             float zoomLimit;
             if (image.getWidth() >= image.getHeight()) {
                 zoomLimit = image.getHeight() / 10;
@@ -284,11 +484,17 @@ public class DrawViewModel {
         imageZoom.yOffset = (int) ((imageZoom.yOffset - (previousPos1.y-screenZoom.yOffset)/screenZoom.scale) * ratio + (previousPos1.y-screenZoom.yOffset)/screenZoom.scale);
     }
 
+    /**
+     * add a stroke to the list of strokes
+     * @param stroke stroke to add
+     */
     public void addStroke(Stroke stroke) {
         strokeList.add(stroke);
     }
 
-
+    /**
+     * sets the dataListener
+     */
     public void setDataListener(DataListener dataListener) {
         this.dataSender = new DataSender(dataListener);
     }
